@@ -11,6 +11,8 @@ export class productsDto{
     Items:string
     @ApiProperty()
     priceAfterDiscount:string
+    @ApiProperty()
+    prodId:string
     
 
 }

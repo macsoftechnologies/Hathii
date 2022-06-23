@@ -75,5 +75,46 @@ export class ProductsService {
     }
  }
  
+async upadateProd(req:productsDto){
+    try{
+        const prod=await this.productModel.updateOne({prodId:req.prodId})
+        if(prod){
+            return{
+            statusCode:HttpStatus.OK,
+            Message:"updated sucessfully",
+            Data:{
+                prod
+            }
+            } 
+        }
+    }catch(error){
+        return{
+            statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+            message: error.message
+        }
+    }
+
+}
+
+
+async deleteProd(req:productsDto){
+    try{
+        const removeProd=await this.productModel.deleteOne({prodId:req.prodId})
+        if(removeProd){
+            return{
+                statusCode:HttpStatus.OK,
+                Message:'deleted Sucessfully',
+                respons:{
+                    removeProd
+                }
+            }
+        }
+    }catch(error){
+        return{
+            statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+            message:error.message
+        }
+    }
+}
 
 }

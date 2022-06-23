@@ -4,6 +4,7 @@ import { extname } from 'path';
 import { productsDto } from './Dto/products.dto';
 import { ProductsService } from './products.service';
 import { AnyFilesInterceptor} from '@nestjs/platform-express'
+import { STATUS_CODES } from 'http';
 
 @Controller('products')
 export class ProductsController {
@@ -49,4 +50,33 @@ export class ProductsController {
       }
     }
      
+
+ @Post('updateProduct')
+ async editProd(@Body() req:productsDto){
+  try{
+    const editprod=await this.productsService.upadateProd(req)
+    return editprod
+  }catch(error){
+    return{
+      statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+      Message:error
+    }
+  }
+ }
+
+
+ @Post('removeproduct')
+ async prodRemove(@Body() req:productsDto){
+  try{
+    const result=await this.productsService.deleteProd(req)
+    return result
+  }catch(error){
+    return{
+    statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+    Message:error
+    
+  }
+  }
+ }
+
 }

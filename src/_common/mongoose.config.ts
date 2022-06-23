@@ -13,7 +13,7 @@ export class MongooseConfigService implements MongooseOptionsFactory{
         return {
           // uri:"",
          uri:'mongodb+srv://macsof:macsof@nextlevelcarwash.yjs3i.mongodb.net/hathii?retryWrites=true&w=majority',
-          
+         
           //useCreateIndex: true
           
           keepAlive: true,

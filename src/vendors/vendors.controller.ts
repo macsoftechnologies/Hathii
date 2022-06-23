@@ -34,4 +34,33 @@ async listVendors(){
         }
     }
 }
+
+
+@Post('removeVendor')
+async vendDelete(@Body() req:vendorDto){
+    try{
+        const result=await this.vendorsService.deleteVen(req)
+        return result
+
+    }catch(error){
+        return{
+            statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+            Message:error
+        }
+    }
+}
+ 
+
+@Post('updateVendor')
+async venUpdate(@Body()req:vendorDto){
+    try{
+   const edit =await this.vendorsService.upadateVen(req)
+   return edit
+    }catch(error){
+        return{
+            statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+            Message:error
+        }
+    }
+}
 }

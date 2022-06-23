@@ -51,4 +51,46 @@ async getVendor(){
     }
 }
 
+
+
+async deleteVen(req:vendorDto){
+    try{
+        const vend=await this.vendorModel.deleteOne({vendorId:req.vendorId})
+        if(vend){
+            return{
+            statusCode:HttpStatus.OK,
+            Message:'deleted Sucessfully',
+            data:{
+                vend
+                }
+          }
+        }
+    }catch(error){
+        return{
+        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+        Message:error
+        }
+    }
+}
+
+async upadateVen(req:vendorDto){
+    try{
+        const editVen=await this.vendorModel.updateOne({vendorId:req.vendorId})
+        if(editVen){
+            return{
+                statusCode:HttpStatus.OK,
+                Message:'updated sucessfully',
+                res:{
+                    editVen
+                }
+            }
+        }
+    }catch(error){
+        return{
+            stausCode:HttpStatus.INTERNAL_SERVER_ERROR,
+            Message:error
+        }
+    }
+}
+
 }

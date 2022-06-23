@@ -1,19 +1,20 @@
 import { ApiProperty } from "@nestjs/swagger";
 
-export class vendorDto{
+export class serviceDto{
     @ApiProperty()
-    vendorId:string
+    serviceId:string
     @ApiProperty()
-    mailId:string
+    name:string
     @ApiProperty()
     mobileNum:string
     @ApiProperty()
-    shopDetails:[]
+    mailId:string
     @ApiProperty()
-    addLocation:string
+    rating:string
     @ApiProperty()
-    modeOfBussiness:string
+    qualification:string
     @ApiProperty()
-    blogPost:[]
-  
+    experience:string
+
+
 }

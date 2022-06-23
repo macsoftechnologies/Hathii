@@ -10,7 +10,7 @@ import { VendorsModule } from './vendors/vendors.module';
 
 @Module({
   imports: [MongooseModule.forRoot('mongodb+srv://macsof:macsof@nextlevelcarwash.yjs3i.mongodb.net/eCommerce?retryWrites=true&w=majority'),
-  UsersModule, AdminModule, ProductsModule, ServicesModule,VendorsModule],
+  UsersModule, AdminModule, ProductsModule, ServicesModule,VendorsModule, ServicesModule],
   controllers: [AppController],
   providers: [AppService],
 })
