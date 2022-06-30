@@ -8,12 +8,19 @@ export class vendorDto{
     @ApiProperty()
     mobileNum:string
     @ApiProperty()
-    shopDetails:[]
+    shopImages:[]
     @ApiProperty()
     addLocation:string
     @ApiProperty()
     modeOfBussiness:string
     @ApiProperty()
     blogPost:[]
+    @ApiProperty()
+    shopName:string
+    @ApiProperty()
+    shopTimings:string
+    
+    
+
   
 }

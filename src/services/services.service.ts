@@ -59,9 +59,7 @@ async updateService(req:serviceDto){
             return{
                 statusCode:HttpStatus.OK,
                 Message:'updated sucessfully',
-                Data:{
-                    res:editser
-                }
+                res:editser
             }
         }
     }catch(error){

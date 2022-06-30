@@ -38,7 +38,7 @@ export class ServicesController {
 
 
    @Post('updateService')
-   async  editservice(@Body()req:serviceDto){
+   async  editservice(@Body() req:serviceDto){
     try{
       const result=await this.servicesService.updateService(req)
       return result
@@ -53,7 +53,7 @@ export class ServicesController {
 
  
 @Post('removeService')
-async deleteservice(@Body()req:serviceDto){
+async deleteservice(@Body() req:serviceDto){
   try{
     const Del=await this.servicesService.Deleteservice(req)
     return Del

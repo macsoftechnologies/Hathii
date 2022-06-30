@@ -1,0 +1,15 @@
+import { ApiProperty } from "@nestjs/swagger"
+
+export class ratingDto{
+    @ApiProperty()
+    buyerId:string
+    @ApiProperty()
+    responseRate:string
+    @ApiProperty()
+    rating:string
+    @ApiProperty()
+    trustRating:string
+    @ApiProperty()
+    vendorVerficationRating:string
+    
+}

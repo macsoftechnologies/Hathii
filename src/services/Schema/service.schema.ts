@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import {v4 as uuid}  from 'uuid'
 import { Document } from "mongoose";
 
-    @Schema()
+    @Schema({timestamps:true})
     export class service extends Document{
         @Prop({required: true, unique: true, default: uuid})
         serviceId:string
@@ -18,7 +18,7 @@ import { Document } from "mongoose";
         qualification:string
         @Prop()
         experience:string
-
-
+    
+        
     }
     export const serviceSchema=SchemaFactory.createForClass(service)

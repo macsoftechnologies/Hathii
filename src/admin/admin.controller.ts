@@ -8,7 +8,7 @@ export class AdminController {
 
 
   @Post('/register')
-  async create(@Body() req: adminDto){
+  async createAdmin(@Body() req: adminDto){
     try{
       const result = await this.adminService.Create(req)
       return result

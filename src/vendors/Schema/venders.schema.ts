@@ -10,14 +10,17 @@ export class vendor extends Document{
    @Prop()
    mobileNum:string
    @Prop()
-   shopDetails:[]
+   shopImages:[]
    @Prop()
-   addLocation:string
+   addLocation:[]
    @Prop()
    modeOfBussiness:string
    @Prop()
    blogPost:[]
-
+   @Prop()
+   shopTimings:string
+   @Prop()
+   shopName:string
      
 }
 export const vendorSchema=SchemaFactory.createForClass(vendor)

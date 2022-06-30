@@ -7,10 +7,12 @@ import { ProductsModule } from './products/products.module';
 import { ServicesModule } from './services/services.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { VendorsModule } from './vendors/vendors.module';
+import { RatingModule } from './rating/rating.module';
+import { ServiceproviderModule } from './serviceprovider/serviceprovider.module';
 
 @Module({
   imports: [MongooseModule.forRoot('mongodb+srv://macsof:macsof@nextlevelcarwash.yjs3i.mongodb.net/eCommerce?retryWrites=true&w=majority'),
-  UsersModule, AdminModule, ProductsModule, ServicesModule,VendorsModule, ServicesModule],
+  UsersModule, AdminModule, ProductsModule, ServicesModule,VendorsModule, ServicesModule, RatingModule, ServiceproviderModule],
   controllers: [AppController],
   providers: [AppService],
 })

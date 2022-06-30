@@ -7,5 +7,6 @@ export class adminDto{
     password:string
     @ApiProperty()
     mobileNum:string
+    
 
 }

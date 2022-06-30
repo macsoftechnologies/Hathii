@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { join } from 'path';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
     const swaggerConfig = new DocumentBuilder()
@@ -23,5 +24,5 @@ async function bootstrap() {
     app.enableCors();
     await app.listen(process.env.PORT ||3000);
   
-}
+} 
 bootstrap();
