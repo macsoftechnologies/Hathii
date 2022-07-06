@@ -6,7 +6,9 @@ import {   VendorsService } from "./vendors.service";
 export class VendorsController {
   constructor(private readonly vendorsService: VendorsService) {}
  
- 
+@Post('') 
+   
+
 @Get('GetVendors')
 async listVendors(){
     try{

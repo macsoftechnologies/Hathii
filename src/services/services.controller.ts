@@ -37,19 +37,7 @@ export class ServicesController {
   }
 
 
-   @Post('updateService')
-   async  editservice(@Body() req:serviceDto){
-    try{
-      const result=await this.servicesService.updateService(req)
-      return result
-    }catch(error){
-      return{
-        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-        Message:error
-      }
-    }
-   }
-     
+   
 
  
 @Post('removeService')
@@ -65,4 +53,21 @@ async deleteservice(@Body() req:serviceDto){
     }
   }
 }
+
+@Post('updateService')
+async servieProv(@Body() req:serviceDto){
+  try{
+     const result=await this.servicesService.updateSer(req)
+     return result
+
+  }catch(error){
+    return{
+      statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+      Message:error
+    }
+  }
+}      
+
+
+
 }

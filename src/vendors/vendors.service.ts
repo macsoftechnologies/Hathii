@@ -9,7 +9,7 @@ export class VendorsService {
     constructor(@InjectModel(vendor.name) private vendorModel: Model<vendor>){}
 
 
- 
+  
     
 
 async getVendor(){
@@ -42,9 +42,7 @@ async deleteVen(req:vendorDto){
             return{
             statusCode:HttpStatus.OK,
             Message:'deleted Sucessfully',
-            data:{
-                vend
-                }
+            res:vend
           }
         }
     }catch(error){

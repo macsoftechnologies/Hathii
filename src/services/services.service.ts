@@ -51,26 +51,7 @@ async getService(){
     }
 }
 
-
-async updateService(req:serviceDto){
-    try{
-        const editser=await this.serviceModel.updateOne({serviceId:req.serviceId})
-        if(editser){
-            return{
-                statusCode:HttpStatus.OK,
-                Message:'updated sucessfully',
-                res:editser
-            }
-        }
-    }catch(error){
-        return{
-            statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-            Message:error
-        }
-    }
-}
-
-
+ 
 async Deleteservice(req:serviceDto){
     try{
         const removeSer=await this.serviceModel.deleteOne({serviceId:req.serviceId})
@@ -83,6 +64,28 @@ async Deleteservice(req:serviceDto){
             }
         } 
 
+        }
+    }catch(error){
+        return{
+            statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+            Message:error
+        }
+    }
+}
+
+
+async updateSer(body:serviceDto){
+
+    try{
+        const response=await this.serviceModel.updateOne({serviceId:body.serviceId})
+        if(response){
+            return{
+                statusCode:HttpStatus.OK,
+                Message:"updated sucessfully",
+                result:{
+                    res:response
+                }
+            }
         }
     }catch(error){
         return{

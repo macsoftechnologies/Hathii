@@ -19,6 +19,5 @@ import { Document } from "mongoose";
         @Prop()
         experience:string
     
-        
     }
     export const serviceSchema=SchemaFactory.createForClass(service)

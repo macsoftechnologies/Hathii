@@ -1,7 +1,8 @@
 import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import { providerloginDto } from './Dto/providerlogin.dto';
 import { serviceProvDto } from './Dto/serviceprovider.dto';
 import { ServiceproviderService } from './serviceprovider.service';
-
+ 
 @Controller('serviceprovider')
 export class ServiceproviderController {
   constructor(private readonly serviceproviderService: ServiceproviderService) {}
@@ -92,4 +93,68 @@ export class ServiceproviderController {
           }
         }
       }
+
+
+
+      // service provder login 
+
+
+      
+  // @Post('/register')
+  // async create(@Body() req:providerloginDto) {
+  //     try {
+  //         const result = await this.serviceproviderService.Create(req)
+  //         console.log("result", result);
+  //         return result
+  //     } catch (error) {
+  //         return {
+  //             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+  //             message: error.message
+  //         };
+  //     }
+
+  // }
+  
+  // @Post('/login')
+  // async login(@Body() req:providerloginDto ) {
+  //     try {
+  //         const result = await this.serviceproviderService.Login(req)
+  //         return result
+  //     } catch (error) {
+  //         return {
+  //             statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+  //             message: error.message
+  //         };
+  //     }
+
+  // }
+
+
+  
+  @Post('/register')
+  async createProvider(@Body() req: providerloginDto){
+    try{
+      const result = await this.serviceproviderService.Create(req)
+      return result
+    } catch(error){
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message
+      };
+    }
+  }
+
+@Post('/login')
+async login(@Body() req: providerloginDto){
+    try{
+      const result = await this.serviceproviderService.loginProvider(req)
+      return result
+    } catch(error){
+      return{
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: error.message
+      };
+    }
+  }
+ 
 }
