@@ -60,9 +60,9 @@ export class ServiceproviderService {
  
 
 
-      async ProviderById(id:string){
+      async ProviderById(req:serviceProvDto){
         try{
-            const provRes=await this.serviceProvModel.findById(id)
+            const provRes=await this.serviceProvModel.find({providerId:req.providerId})
             if(provRes){
                 return{
                     statusCode:HttpStatus.OK,
@@ -84,7 +84,9 @@ export class ServiceproviderService {
         async updateProv(req:serviceProvDto){
 
             try{
-                const response=await this.serviceProvModel.updateOne({providerId:req.providerId})
+                const response=await this.serviceProvModel.updateOne({providerId:req.providerId},{$set:{ email:req.email, phoneNumber:req.phoneNumber, name:req.name,
+                    experience:req.experience, qualification: req.qualification, location: req.location, skills: req.skills, rating: req.rating, aadharNumber:req.aadharNumber, labourcard: req.labourcard}})
+                   
                 if(response){
                     return{
                         statusCode:HttpStatus.OK,

@@ -45,11 +45,11 @@ export class ServiceproviderController {
 
 
   
-     @Post('getprovider/:id')
-     async getRes(@Param('id')id:string){
+     @Post('/getproviderById')
+     async getRes(@Body() req:serviceProvDto){
       try{
 
-        const result=await this.serviceproviderService.ProviderById(id)
+        const result=await this.serviceproviderService.ProviderById(req)
         return result 
       }catch(error){
         return{
