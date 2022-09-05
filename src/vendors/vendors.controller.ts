@@ -11,16 +11,20 @@ import {
   AnyFilesInterceptor,
   FileFieldsInterceptor,
 } from '@nestjs/platform-express';
+import { ApiBody, ApiTags   } from '@nestjs/swagger';
 import { vendorDto } from './Dto/venders.dto';
 import { VendorsService } from './vendors.service';
 
 @Controller('vendor')
 export class VendorsController {
   constructor(private readonly vendorsService: VendorsService) {}
-
+  @ApiTags('vendor')
+  @ApiBody({
+    type:vendorDto
+  })
   @Post('/addVendor')
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'blogPost' }, { name: 'shopPhoto' }]),
+    FileFieldsInterceptor([{ name: 'blogPost' }, { name: 'shopPhoto' },{name:'color'}]),
   )
   async create(@Body() req: vendorDto, @UploadedFiles() image) {
     try {
@@ -34,6 +38,9 @@ export class VendorsController {
       };
     }
   }
+
+
+  @ApiTags('vendor')
   @Get('GetVendors')
   async listVendors() {
     try {
@@ -47,7 +54,12 @@ export class VendorsController {
     }
   }
 
-  @Post('removeVendor')
+
+  @ApiTags('vendor')
+  @ApiBody({
+    type:vendorDto
+  })
+  @Post('/removeVendor')
   async vendDelete(@Body() req: vendorDto) {
     try {
       const result = await this.vendorsService.deleteVen(req);
@@ -60,6 +72,11 @@ export class VendorsController {
     }
   }
 
+
+  @ApiTags('vendor')
+  @ApiBody({
+    type:vendorDto
+  })
   @Post('getVendorById')
   async getvendor(@Body() req: vendorDto) {
     try {
@@ -73,13 +90,18 @@ export class VendorsController {
     }
   }
 
-  @Post('updateVendor')
+
+  @ApiTags('vendor')
+  @ApiBody({
+    type:vendorDto
+  })
+  @Post('/updateVendor')
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: 'blogPost' }, { name: 'shopPhoto' }]),
+    FileFieldsInterceptor([{ name: 'blogPost' }, { name: 'shopPhoto' },{name:'color'}]),
   )
   async updateVendor(@Body() req: vendorDto, @UploadedFiles() image) {
     try {
-      const result = await this.vendorsService.update(req, image);
+      const result = await this.vendorsService.updateVendor(req, image);
       console.log('result', result);
       return result;
     } catch (error) {

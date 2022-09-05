@@ -16,6 +16,13 @@ export class rating  extends Document{
    trustRating:string
    @Prop()
    vendorVerficationRating:string
+   @Prop()
+   overallRating:string
+   @Prop()
+   vendorId:string
+   @Prop()
+   productId:string
+   
    
  
 }

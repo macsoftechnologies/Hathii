@@ -1,4 +1,5 @@
 import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ratingDto } from './Dto/rating.dto';
 import { RatingService } from './rating.service';
 
@@ -6,6 +7,11 @@ import { RatingService } from './rating.service';
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
 
+  
+  @ApiTags('rating')
+  @ApiBody({
+    type:ratingDto
+  })
   @Post('addrating')
   async Create(@Body() req:ratingDto){
     try{
@@ -20,7 +26,8 @@ export class RatingController {
     }
   }
 
-
+ 
+     @ApiTags('rating')
      @Get('getRating')
      async resRate(){
       try{
@@ -34,9 +41,12 @@ export class RatingController {
       }
      }
 
-
-  
-       @Post('removerating')
+ 
+     @ApiTags('rating')
+     @ApiBody({
+       type:ratingDto
+     })
+     @Post('removerating')
        async deleterate(@Body() req:ratingDto){
 
         try{
@@ -50,8 +60,8 @@ export class RatingController {
         }
        }
        
-      
-
+       
+       @ApiTags('rating')
        @Post(':id')
        async getRes(@Param('id')id:string){
         try{
@@ -60,9 +70,8 @@ export class RatingController {
           return result 
         }catch(error){
           return{
-
             statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-            Message:error
+             Message:error
     
           }
         }

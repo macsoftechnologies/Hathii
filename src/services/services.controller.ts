@@ -1,12 +1,17 @@
 import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { serviceDto } from './Dto/service.dto';
 import { ServicesService } from './services.service';
 
 @Controller('services')
 export class ServicesController {
   constructor(private readonly servicesService: ServicesService) {}
-
-  @Post('service')
+ 
+  @ApiTags('services')
+  @ApiBody({
+    type:serviceDto
+  })
+  @Post('/service')
   async createservice(@Body() req:serviceDto){
     try{
       const result =await this.servicesService.CreateService(req)
@@ -20,8 +25,8 @@ export class ServicesController {
   }
 
 
-
-  @Get('getService')
+  @ApiTags('services')
+  @Get('/getService')
   async getservice(){
     try{
       const res=await this.servicesService.getService()
@@ -39,8 +44,11 @@ export class ServicesController {
 
    
 
- 
-@Post('removeService')
+  @ApiTags('services')
+  @ApiBody({
+    type:serviceDto
+  })
+@Post('/removeService')
 async deleteservice(@Body() req:serviceDto){
   try{
     const Del=await this.servicesService.Deleteservice(req)
@@ -54,7 +62,12 @@ async deleteservice(@Body() req:serviceDto){
   }
 }
 
-@Post('updateService')
+@ApiTags('services')
+  @ApiBody({
+    type:serviceDto
+  })
+  
+@Post('/updateService')
 async servieProv(@Body() req:serviceDto){
   try{
      const result=await this.servicesService.updateSer(req)

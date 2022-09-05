@@ -29,6 +29,12 @@ export class VendorsService {
 
           req.blogPost = attachmentFile;
         }
+        if(image.color && image.color[0]){
+          const attachmentFile= await this.sharedService.saveFile(
+            image.color[0],
+          );
+          req.color=attachmentFile;
+        }
       }
 
       const addVendorResp = await this.vendorModel.create(req);
@@ -78,7 +84,7 @@ export class VendorsService {
           statusCode: HttpStatus.OK,
           Message: 'deleted Sucessfully',
           data: {
-            vend,
+            vend
           },
         };
       }
@@ -112,7 +118,7 @@ export class VendorsService {
     }
   }
 
-  async update(req: vendorDto, image) {
+  async updateVendor(req: vendorDto, image) {
     try {
       // console.log(req, "req...", image)
       if (image) {
@@ -129,17 +135,31 @@ export class VendorsService {
 
           req.blogPost = attachmentFile;
         }
+        if(image.color && image.color[0]){
+          const attachmentFile=await this.sharedService.saveFile(
+            image.color[0],
+          )
+          req.color=attachmentFile;
+        }
       }
 
       const updateVendorResp = await this.vendorModel.updateOne(
         { vendorId: req.vendorId },
         {
           $set: {
-            mailId: req.mailId,
-            mobileNum: req.mobileNum,
-            shopDetails: req.shopDetails,
-            blogPost: req.blogPost,
-            shopPhoto: req.shopPhoto,
+            vendorName:req.vendorName,
+            mobileNum:req.mobileNum,
+            email:req.email,
+            shopName:req.shopName,
+            shopTimings:req.shopTimings,
+            addLocation:req.addLocation,
+            modeOfBussiness:req.modeOfBussiness,
+            Gstin:req.Gstin,
+            shopProof:req.shopProof,
+            blogPost:req.blogPost,
+            shopPhoto:req.shopPhoto,
+            color:req.color,
+            rating:req.rating
           },
         },
       );

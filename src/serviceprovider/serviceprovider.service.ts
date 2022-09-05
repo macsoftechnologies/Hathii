@@ -12,28 +12,47 @@ export class ServiceproviderService {
     constructor(@InjectModel(serviceProv.name) private serviceProvModel:Model<serviceProv> ,@InjectModel(providerlogin.name) private providerModel:Model<providerlogin>){}
    
     
-    async CreateServiceProv(req:serviceProvDto){
-        try{
-            const  createser=await this.serviceProvModel.create(req)
-            if(createser){
-                return{
-                    statusCode:HttpStatus.OK,
-                    Message:'Registred sucesfully',
-                    createSer:createser
+    async addserviceProd(req:serviceProvDto, image) {
+        try {
+            console.log(req, "documents...", image)
+            if (image) {
+                const reqDoc = image.map((doc, index) => {
+                    let IsPrimary = false
+                    if (index == 0) {
+                        IsPrimary = true
+                    }
+                    const randomNumber = Math.floor((Math.random() * 1000000) + 1);
+                    return doc.filename
+                })
+
+                req.labourcard = reqDoc.toString()
+            }
+            console.log(req);
+            // return false;
+            const serviceProd = await this.serviceProvModel.create(req)
+
+            if (serviceProd) {
+                return {
+                    statusCode: HttpStatus.OK,
+                     serviceProduct: serviceProd
                     
+                     
                 }
             }
-        }catch(error){
-            return{
-                statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-                Message:error
+            return {
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: "Invalid Request"
             }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message,
+            };
         }
     }
 
+ 
 
-     
-    
       async getProvider(){
 
         try{
@@ -80,29 +99,74 @@ export class ServiceproviderService {
     }
 
 
-     
-        async updateProv(req:serviceProvDto){
 
-            try{
-                const response=await this.serviceProvModel.updateOne({providerId:req.providerId},{$set:{ email:req.email, phoneNumber:req.phoneNumber, name:req.name,
-                    experience:req.experience, qualification: req.qualification, location: req.location, skills: req.skills, rating: req.rating, aadharNumber:req.aadharNumber, labourcard: req.labourcard}})
-                   
-                if(response){
-                    return{
-                        statusCode:HttpStatus.OK,
-                        Message:"updated sucessfully",
-                        result:{
-                            res:response
-                        }
+    async editserviceProd(req:serviceProvDto, image) {
+        try {
+            console.log(req, "documents...", image)
+            if (image) {
+                const reqDoc = image.map((doc, index) => {
+                    let IsPrimary = false
+                    if (index == 0) {
+                        IsPrimary = true
                     }
-                }
-            }catch(error){
-                return{
-                    statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-                    Message:error
+                    const randomNumber = Math.floor((Math.random() * 1000000) + 1);
+                    return doc.filename
+                })
+
+                req.labourcard = reqDoc.toString()
+            }
+            console.log(req);
+            // return false;
+            const serviceProd = await this.serviceProvModel.updateOne({providerId:req.providerId},{$set:{ email:req.email, phoneNumber:req.phoneNumber, name:req.name,
+                experience:req.experience,  minwageRating: req.minwageRating, location: req.location, skills: req.skills, rating: req.rating, aadharNumber:req.aadharNumber, labourcard: req.labourcard}})
+               
+
+            if (serviceProd) {
+                return {
+                    statusCode: HttpStatus.OK,
+                    Message:'updated sucessfully',
+                     serviceProduct: serviceProd
+                    
+                     
                 }
             }
+            return {
+                statusCode: HttpStatus.BAD_REQUEST,
+                message: "Invalid Request"
+            }
+        } catch (error) {
+            return {
+                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: error.message,
+            };
         }
+    }
+
+
+
+     
+        // async updateProv(req:serviceProvDto){
+
+        //     try{
+        //         const response=await this.serviceProvModel.updateOne({providerId:req.providerId},{$set:{ email:req.email, phoneNumber:req.phoneNumber, name:req.name,
+        //             experience:req.experience,  minwageRating: req.minwageRating, location: req.location, skills: req.skills, rating: req.rating, aadharNumber:req.aadharNumber, labourcard: req.labourcard}})
+                   
+        //         if(response){
+        //             return{
+        //                 statusCode:HttpStatus.OK,
+        //                 Message:"updated sucessfully",
+        //                 result:{
+        //                     res:response
+        //                 }
+        //             }
+        //         }
+        //     }catch(error){
+        //         return{
+        //             statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+        //             Message:error
+        //         }
+        //     }
+        // }
 
 
         

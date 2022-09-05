@@ -12,7 +12,7 @@ export class serviceProvDto{
     @ApiProperty()
     experience:string
     @ApiProperty()
-    qualification:string
+    minwageRating:string
     @ApiProperty()
     location:string
     @ApiProperty()

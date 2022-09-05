@@ -74,10 +74,18 @@ async Deleteservice(req:serviceDto){
 }
 
 
-async updateSer(body:serviceDto){
+async updateSer(req:serviceDto){
 
     try{
-        const response=await this.serviceModel.updateOne({serviceId:body.serviceId})
+        const response=await this.serviceModel.updateOne({serviceId:req.serviceId},
+            {$set:{
+                name:req.name,
+                mobileNum :req.mobileNum,
+                mailId:req.mailId,
+                rating:req.rating,
+                qualification:req.qualification,
+                experience:req.experience
+            }})
         if(response){
             return{
                 statusCode:HttpStatus.OK,

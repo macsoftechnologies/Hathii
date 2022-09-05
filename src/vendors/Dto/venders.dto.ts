@@ -4,17 +4,30 @@ export class vendorDto {
   @ApiProperty()
   vendorId: string;
   @ApiProperty()
-  mailId: string;
+  vendorName:string
   @ApiProperty()
   mobileNum: string;
   @ApiProperty()
-  shopDetails: [];
+  email:string
   @ApiProperty()
-  addLocation: string;
+  shopName:string
+  @ApiProperty()
+  shopTimings: [];
+  @ApiProperty()
+  addLocation: [];
   @ApiProperty()
   modeOfBussiness: string;
+  @ApiProperty()
+  Gstin:string
+  @ApiProperty()
+  shopProof:string
   @ApiProperty()
   blogPost: [];
   @ApiProperty()
   shopPhoto: string;
+  @ApiProperty()
+  color:[]
+  @ApiProperty()
+  rating:string 
+
 }

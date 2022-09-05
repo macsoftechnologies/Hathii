@@ -6,18 +6,30 @@ export class vendor extends Document {
   @Prop({ required: true, unique: true, default: uuid })
   vendorId: string;
   @Prop()
-  mailId: string;
+  vendorName:string
   @Prop()
   mobileNum: string;
   @Prop()
-  shopDetails: [];
+  email:string
+  @Prop()
+  shopName:string
+  @Prop()
+  shopTimings: [];
   @Prop()
   addLocation: [];
   @Prop()
   modeOfBussiness: string;
   @Prop()
+  Gstin:string
+  @Prop()
+  shopProof:string
+  @Prop()
   blogPost: [];
   @Prop()
   shopPhoto: string;
+  @Prop()
+  color:[]
+  @Prop()
+  rating:string 
 }
 export const vendorSchema = SchemaFactory.createForClass(vendor);

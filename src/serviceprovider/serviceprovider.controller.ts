@@ -1,32 +1,54 @@
-import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { providerloginDto } from './Dto/providerlogin.dto';
 import { serviceProvDto } from './Dto/serviceprovider.dto';
 import { ServiceproviderService } from './serviceprovider.service';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
  
 @Controller('serviceprovider')
 export class ServiceproviderController {
   constructor(private readonly serviceproviderService: ServiceproviderService) {}
 
-   
 
-  @Post('addServiceProvider')
-  async createservice(@Body() req:serviceProvDto){
-    try{
-      const result =await this.serviceproviderService.CreateServiceProv(req)
-      console.log("result", result);
-       return result
-    }catch(error){
-      return{
-        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-        message:error.message,
+  @ApiTags('serviceprovider')
+  @ApiBody({
+    type:serviceProvDto
+  })
+ @Post('/addServiceProvider')
+  @UseInterceptors(
+      AnyFilesInterceptor({
+          storage: diskStorage({
+              destination: './files',
+              filename: (req, file, cb) => {
+                  const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('')
+                  cb(null, `${randomName}${extname(file.originalname)}`)
+              }
+          }),
+      }),
+  )
+  async CreateserviceProd(@Body() req: serviceProvDto, @UploadedFiles() image) {
+      try {
+          const result = await this.serviceproviderService.addserviceProd(req, image)
+          console.log("result", result);
+
+          return result
+      } catch (error) {
+          return {
+              statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+              message: error.message,
+          };
       }
-    }
   }
 
 
-      
 
-     @Get('getServicerProviders')
+
+  
+
+  @ApiTags('serviceprovider')
+  @Get('getServicerProviders')
      async providerSer(){
       try{
 
@@ -43,9 +65,11 @@ export class ServiceproviderController {
     
     }
 
-
-  
-     @Post('/getproviderById')
+    @ApiTags('serviceprovider')
+    @ApiBody({
+    type:serviceProvDto
+     })
+    @Post('/getproviderById')
      async getRes(@Body() req:serviceProvDto){
       try{
 
@@ -62,21 +86,55 @@ export class ServiceproviderController {
      }
  
    
-      @Post('UpdateserviceProvider')
-      async servieProv(@Body() req:serviceProvDto){
-        try{
-           const result=await this.serviceproviderService.updateProv(req)
-           return result
+      // @Post('UpdateserviceProvider')
+      // async servieProv(@Body() req:serviceProvDto){
+      //   try{
+      //      const result=await this.serviceproviderService.updateProv(req)
+      //      return result
 
-        }catch(error){
-          return{
-            statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-            Message:error
-          }
-        }
-      }      
+      //   }catch(error){
+      //     return{
+      //       statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+      //       Message:error
+      //     }
+      //   }
+      // }  
+          
+    @ApiTags('serviceprovider')
+    @ApiBody({
+    type:serviceProvDto
+     })
+      @Post('/updateServiceProvider')
+      @UseInterceptors(
+          AnyFilesInterceptor({
+              storage: diskStorage({
+                  destination: './files',
+                  filename: (req, file, cb) => {
+                      const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('')
+                      cb(null, `${randomName}${extname(file.originalname)}`)
+                  }
+              }),
+          }),
+      )
+      async updatProvider(@Body() req: serviceProvDto, @UploadedFiles() image) {
+          try {
+              const result = await this.serviceproviderService.editserviceProd(req, image)
+              console.log("result", result);
     
-
+              return result
+          } catch (error) {
+              return {
+                  statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                  message: error.message,
+              };
+          }
+      }
+     
+       
+      @ApiTags('serviceprovider')
+      @ApiBody({
+      type:serviceProvDto
+       })
       @Post('removeServieProvider')
       async removeser(@Body() req:serviceProvDto){
 
@@ -130,7 +188,10 @@ export class ServiceproviderController {
   // }
 
 
-  
+  @ApiTags('serviceprovider')
+    @ApiBody({
+    type:providerloginDto
+     })
   @Post('/register')
   async createProvider(@Body() req: providerloginDto){
     try{
@@ -144,6 +205,11 @@ export class ServiceproviderController {
     }
   }
 
+  
+@ApiTags('serviceprovider')
+@ApiBody({
+  type:providerloginDto
+   })
 @Post('/login')
 async login(@Body() req: providerloginDto){
     try{

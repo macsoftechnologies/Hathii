@@ -13,5 +13,10 @@ export class ratingDto{
     trustRating:string
     @ApiProperty()
     vendorVerficationRating:string
-    
+    @ApiProperty()
+    overallRating:string
+    @ApiProperty()
+    vendorId:string
+    @ApiProperty()
+    productId:string
 }

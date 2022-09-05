@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
 import { Document } from "mongoose"
 import {v4 as uuid } from 'uuid'
+
 @Schema({timestamps:true})
 export class serviceProv extends Document{
     @Prop({required: true, unique: true, default: uuid})
@@ -14,7 +15,7 @@ export class serviceProv extends Document{
     @Prop()
     experience:string
     @Prop()
-    qualification:string
+    minwageRating:string
     @Prop()
     location:string
     @Prop()
@@ -25,6 +26,7 @@ export class serviceProv extends Document{
     aadharNumber:string
     @Prop()
     labourcard:string
+
 
 }
 export const serviceProvSchema=SchemaFactory.createForClass(serviceProv)
