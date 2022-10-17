@@ -18,6 +18,8 @@ export class vendorproductDto{
     @ApiProperty()
     categoryId:string
     @ApiProperty()
+    subCategoryId: string
+    @ApiProperty()
     specifications:{}
     @ApiProperty()
     hold: number
