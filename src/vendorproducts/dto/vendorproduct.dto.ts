@@ -19,6 +19,12 @@ export class vendorproductDto{
     categoryId:string
     @ApiProperty()
     specifications:{}
-
-    
+    @ApiProperty()
+    hold: number
+    @ApiProperty()
+    request: number
+    @ApiProperty()
+    availability: number
+    @ApiProperty()
+    quantity: number
 }

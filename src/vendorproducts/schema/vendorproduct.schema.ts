@@ -27,6 +27,14 @@ export class vendorproduct extends Document{
     specifications:{
         type:any 
     }
+    @Prop()
+    hold: number
+    @Prop()
+    request: number
+    @Prop()
+    availability: number
+    @Prop()
+    quantity: number
 }
 
 export const vendorproductSchema=SchemaFactory.createForClass(vendorproduct)

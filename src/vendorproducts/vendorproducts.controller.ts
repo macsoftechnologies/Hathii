@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
-import { ApiBody,  ApiTags } from '@nestjs/swagger';
+import { ApiBody,  ApiPayloadTooLargeResponse,  ApiTags } from '@nestjs/swagger';
 import { vendorproductDto } from './dto/vendorproduct.dto';
 import { VendorproductsService } from './vendorproducts.service';
 
@@ -71,6 +71,25 @@ export class VendorproductsController {
       return{
         statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
         Message:error
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: vendorproductDto
+  })
+  @Post('/inventory')
+  async inventoryAPI(@Body() req: vendorproductDto) {
+    try{
+      const invent = await this.vendorproductsService.inventoryApi(req);
+      if(invent) {
+        return invent;
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
       }
     }
   }
