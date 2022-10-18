@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { orderDto } from './dto/order.dto';
+import { userDto } from './dto/users.dto';
 import { UsersService } from './users.service';
 
 @Controller('users')
@@ -88,4 +89,96 @@ export class UsersController {
         }
       }
     } 
+
+    @ApiTags('users')
+  @ApiBody({
+    type: userDto
+  }) 
+  @Post('/userregistration')
+  async userRegister(@Body() req: userDto) {
+    try{
+      const add = await this.usersService.registerUser(req);
+      if(add){
+        return add;
+      }
+    } catch(error) {
+      return{
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('users')
+  @Get('/getuserslist')
+  async getUsersList() {
+    try{
+      const add = await this.usersService.getUserslist();
+      if(add){
+        return add;
+      }
+    } catch(error) {
+      return{
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('users')
+  @ApiBody({
+    type: userDto
+  }) 
+  @Post('/getusersbyid')
+  async getUserById(@Body() req: userDto) {
+    try{
+      const add = await this.usersService.getUserbyid(req);
+      if(add){
+        return add;
+      }
+    } catch(error) {
+      return{
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('users')
+  @ApiBody({
+    type: userDto
+  }) 
+  @Post('/updateUser')
+  async updateuser(@Body() req: userDto) {
+    try{
+      const add = await this.usersService.updateUser(req);
+      if(add){
+        return add;
+      }
+    } catch(error) {
+      return{
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('users')
+  @ApiBody({
+    type: userDto
+  }) 
+  @Post('/deleteUser')
+  async deleteuser(@Body() req: userDto) {
+    try{
+      const add = await this.usersService.deleteUser(req);
+      if(add){
+        return add;
+      }
+    } catch(error) {
+      return{
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
 }

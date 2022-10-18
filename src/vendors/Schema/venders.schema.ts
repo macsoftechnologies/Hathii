@@ -30,6 +30,6 @@ export class vendor extends Document {
   @Prop()
   color:[]
   @Prop()
-  rating:string 
+  rating:string;
 }
 export const vendorSchema = SchemaFactory.createForClass(vendor);

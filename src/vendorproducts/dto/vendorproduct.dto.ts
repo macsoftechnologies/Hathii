@@ -14,7 +14,7 @@ export class vendorproductDto{
     @ApiProperty()
     finalPrice:string 
     @ApiProperty()
-    category:string
+    shopType:string
     @ApiProperty()
     categoryId:string
     @ApiProperty()

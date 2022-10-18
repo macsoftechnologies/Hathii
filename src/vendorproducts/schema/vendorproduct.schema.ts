@@ -20,7 +20,7 @@ export class vendorproduct extends Document{
     @Prop()
     finalPrice:string 
     @Prop()
-    category:string
+    shopType:string
     @Prop()
     categoryId:string
     @Prop()
