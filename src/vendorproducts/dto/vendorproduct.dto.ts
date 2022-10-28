@@ -20,7 +20,11 @@ export class vendorproductDto{
     @ApiProperty()
     subCategoryId: string
     @ApiProperty()
-    specifications:{}
+    productDetails:{}
+    @ApiProperty()
+    policy: string
+    @ApiProperty()
+    description: string
     @ApiProperty()
     hold: number
     @ApiProperty()

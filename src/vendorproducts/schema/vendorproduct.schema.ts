@@ -3,7 +3,7 @@ import {Document} from 'mongoose'
 import {v4 as uuid} from 'uuid'
  
 @Schema()
-export class specifications{}
+export class productDetails{}
 
 @Schema({timestamps:true})
 export class vendorproduct extends Document{
@@ -25,10 +25,14 @@ export class vendorproduct extends Document{
     categoryId:string
     @Prop()
     subCategoryId: string
-    @Prop({trim: true,strict:true,type:specifications})
-    specifications:{
+    @Prop({trim: true,strict:true,type:productDetails})
+    productDetails:{
         type:any 
     }
+    @Prop()
+    policy: string
+    @Prop()
+    description: string
     @Prop()
     hold: number
     @Prop()

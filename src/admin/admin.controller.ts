@@ -103,7 +103,7 @@ async login(@Body() req: adminDto){
   @ApiBody({
     type:adminproductDto
   })
-  @Post('/getamdinProductById')
+  @Post('/getadminProductById')
   async getadminproduct(@Body() req:adminproductDto){
     try{
       const prodId=await this.adminService.getProductId(req)
@@ -188,7 +188,7 @@ async login(@Body() req: adminDto){
   @ApiBody({
     type:feedbackDto
   })
-  @Post('/creatFeddback')
+  @Post('/creatFeedback')
   async Create(@Body() req:feedbackDto){
     try{
       const resfeed=await this.adminService.createfeddback(req)
@@ -241,7 +241,7 @@ async login(@Body() req: adminDto){
   @ApiBody({
     type:feedbackDto
   })
-  @Post('/getfeedbakId')
+  @Post('/getfeedbackId')
   async getById( @Body() req:feedbackDto){
     try{
       const res=await this.adminService.feedbackbyId(req)
@@ -362,7 +362,7 @@ async login(@Body() req: adminDto){
   @ApiBody({
     type:rewardpointDto
   })
-   @Post('/addRewarpoint')
+   @Post('/addRewardpoint')
    async CreatePoint(@Body() req:rewardpointDto){
     try{
       const respoint=await this.adminService.createrewardpoint(req)
@@ -393,7 +393,7 @@ async login(@Body() req: adminDto){
    @ApiBody({
      type:rewardpointDto
    })
-   @Post('/getpointById')
+   @Post('/getrewardpointById')
    async getpointsById(req:rewardpointDto){
     try{
       const pointById=await this.adminService.getpointById(req)

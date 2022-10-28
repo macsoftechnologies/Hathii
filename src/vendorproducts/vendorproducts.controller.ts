@@ -1,5 +1,6 @@
 import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
 import { ApiBody,  ApiPayloadTooLargeResponse,  ApiTags } from '@nestjs/swagger';
+import { inventoryManagementDto } from './dto/inventoryManangement.dto';
 import { vendorproductDto } from './dto/vendorproduct.dto';
 import { VendorproductsService } from './vendorproducts.service';
 
@@ -12,7 +13,7 @@ export class VendorproductsController {
   @ApiBody({
     type:vendorproductDto
   })
-  @Post('/createVendorProd')
+  @Post('/createVendorProduct')
   async createProd(@Body() req:vendorproductDto){
     try{
       const res=await this.vendorproductsService.vendorprodcreate(req)
@@ -27,7 +28,7 @@ export class VendorproductsController {
 
   
   @ApiTags('vendorproducts')
-  @Get('/getVenProd')
+  @Get('/getVendorProduct')
   async vendprodVen(){
     try{
       const result =await this.vendorproductsService.getVenProd()
@@ -86,6 +87,57 @@ export class VendorproductsController {
       if(invent) {
         return invent;
       }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: vendorproductDto
+  })
+  @Post('/addinventorymanagement')
+  async addinventManagement(@Body() req: inventoryManagementDto) {
+    try{
+      const addinvent = await this.vendorproductsService.addInventManagement(req);
+      return addinvent;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: inventoryManagementDto
+  })
+  @Get('/getinventory')
+  async getinventory() {
+    try{
+      const getem = await this.vendorproductsService.getInventory();
+      return getem;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: vendorproductDto
+  })
+  @Post('/inventorymanagement')
+  async inventoryManagement(@Body() req: inventoryManagementDto){
+    try{
+      const inventorymanagement = await this.vendorproductsService.inventoryManage(req);
+      return inventorymanagement;
     } catch(error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
