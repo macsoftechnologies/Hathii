@@ -145,4 +145,38 @@ export class VendorproductsController {
       }
     }
   }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: vendorproductDto
+  })
+  @Post('/searchProductbypriceandshoptype')
+  async searchProductByPriceandShop(@Body() req: vendorproductDto) {
+    try{
+      const search = await this.vendorproductsService.searchProductsByPriceandShop(req);
+      return search;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: vendorproductDto
+  })
+  @Post('/searchbycategory')
+  async searchByCategory(@Body() req: vendorproductDto) {
+    try{
+      const search = await this.vendorproductsService.searchProductByCategory(req);
+      return search;
+    } catch(error) {
+      return{
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
 }

@@ -1,6 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { categoryDto } from 'src/category/dto/categoty.dto';
+import { Category } from 'src/category/schema/category.schema';
+import { Subcategory } from 'src/category/schema/subcategory.schema';
+import { rating } from 'src/rating/Schema/rating.schema';
 import { inventoryManagementDto } from './dto/inventoryManangement.dto';
 import { vendorproductDto } from './dto/vendorproduct.dto';
 import { inventoryManagement } from './schema/inventoryManagemement.schema';
@@ -233,6 +237,87 @@ export class VendorproductsService {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
       };
+    }
+  }
+
+  async searchProductsByPriceandShop(req: vendorproductDto) {
+    try {
+      const search = await this.vendorproductModel.find({
+        $or: [
+          { price: new RegExp('.*' + req.price + '.*', 'i') },
+          { discount: new RegExp('.*' + req.discount + '.*', 'i') },
+          { shopType: new RegExp('.*' + req.shopType + '.*', 'i') },
+        ],
+      });
+      if (search) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'searched products',
+          data: search,
+        };
+      }
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        msg: 'Invalid Request',
+      };
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async searchProductByCategory(req: vendorproductDto) {
+    try{
+      const searchbycat = await this.vendorproductModel.find({
+        $or: [
+          {categoryId: new RegExp('.*' + req.categoryId + '.*', 'i')},
+          {subCategoryId: new RegExp('.*' + req.subCategoryId + '.*', 'i')},
+        ]
+      });
+      if(searchbycat) {
+        const catandsubcat = await this.vendorproductModel.aggregate([
+          {$match: {
+            $or: [
+              {categoryId: req.categoryId},
+              {subCategoryId: req.subCategoryId},
+            ]
+          }},
+          {
+            $lookup: {
+              from: 'categories',
+              localField: 'categoryId',
+              foreignField: 'categoryId',
+              as: 'categoryId'
+            }
+          },
+          {
+            $lookup: {
+              from: 'subcategories',
+              localField: 'subCategoryId',
+              foreignField: 'subcategoryId',
+              as: 'subCategoryId'
+            }
+          }
+        ]);
+        if(catandsubcat) {
+          return {
+            statusCode: HttpStatus.OK,
+            data: catandsubcat,
+          }
+        }
+      } else{
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
     }
   }
 }

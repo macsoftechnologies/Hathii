@@ -207,10 +207,10 @@ async login(@Body() req: adminDto){
     type:feedbackDto
   })
   @Post('/updatefeedback')
-  async edit (@Body() req:feedbackDto){
+  async editFeedback(@Body() req:feedbackDto){
     try{
       const res =await this.adminService.updatefeedback(req)
-      return res
+      return res;
     }catch(error){
       return{
         statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
@@ -394,10 +394,10 @@ async login(@Body() req: adminDto){
      type:rewardpointDto
    })
    @Post('/getrewardpointById')
-   async getpointsById(req:rewardpointDto){
+   async getpointsById(@Body() req:rewardpointDto){
     try{
-      const pointById=await this.adminService.getpointById(req)
-      return pointById
+      const pointById=await this.adminService.getpointById(req);
+      return pointById;
     }catch(error){
       return{
         statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
