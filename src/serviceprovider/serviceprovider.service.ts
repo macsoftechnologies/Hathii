@@ -67,6 +67,10 @@ export class ServiceproviderService {
 
                 }
             }
+            return {
+                statusCode: HttpStatus.BAD_REQUEST,
+                msg: "Invalid Request",
+            }
         }catch(error){
             return{
                 satusCode:HttpStatus.INTERNAL_SERVER_ERROR,
@@ -89,6 +93,10 @@ export class ServiceproviderService {
                         provRes
                     }
                 }
+            }
+            return {
+                statusCode: HttpStatus.BAD_REQUEST,
+                msg: "Invalid Request",
             }
         }catch(error){
             return{
@@ -183,6 +191,10 @@ export class ServiceproviderService {
                 }
             } 
 
+            }
+            return {
+                statusCode: HttpStatus.BAD_REQUEST,
+                msg: "Invalid Request",
             }
         }catch(error){
             return{
@@ -293,14 +305,14 @@ async  Create(req: providerloginDto){
 
     async loginProvider(req: providerloginDto){
         try {
-            const loginRes = await this.providerModel.findOne({ $or: [{email: req.email}, { password: req.password},{mobileNum:req.mobileNum}]}).lean()
+            const loginRes = await this.providerModel.findOne({ $or: [{email: req.email},{mobileNum:req.mobileNum}]}).lean()
            if(loginRes){
             if(loginRes.password === req.password){
                 return {
                     
                     statusCode: HttpStatus.OK,
                     message:"Login SuccessFull",
-                    login: loginRes
+                    // login: loginRes
                       }
             }
          return{

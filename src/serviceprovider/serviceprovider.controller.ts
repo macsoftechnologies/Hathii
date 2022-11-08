@@ -18,22 +18,25 @@ export class ServiceproviderController {
   })
  @Post('/addServiceProvider')
   @UseInterceptors(
-      AnyFilesInterceptor({
-          storage: diskStorage({
-              destination: './files',
-              filename: (req, file, cb) => {
-                  const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('')
-                  cb(null, `${randomName}${extname(file.originalname)}`)
-              }
-          }),
+    AnyFilesInterceptor({
+      storage: diskStorage({
+        destination: './files',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
       }),
+    }),
   )
   async CreateserviceProd(@Body() req: serviceProvDto, @UploadedFiles() image) {
       try {
-          const result = await this.serviceproviderService.addserviceProd(req, image)
+          const result = await this.serviceproviderService.addserviceProd(req, image);
           console.log("result", result);
 
-          return result
+          return result;
       } catch (error) {
           return {
               statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

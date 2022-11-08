@@ -26,7 +26,7 @@ export class vendor extends Document {
   @Prop()
   blogPost: [];
   @Prop()
-  shopPhoto: string;
+  shopPhoto: [];
   @Prop()
   color:[]
   @Prop()

@@ -24,7 +24,7 @@ export class vendorDto {
   @ApiProperty()
   blogPost: [];
   @ApiProperty()
-  shopPhoto: string;
+  shopPhoto: [];
   @ApiProperty()
   color:[]
   @ApiProperty()
