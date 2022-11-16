@@ -110,6 +110,23 @@ export class UsersController {
   }
 
   @ApiTags('users')
+  @ApiBody({
+    type: userDto
+  })
+  @Post('/loginuser')
+  async userLogin(@Body() req: userDto) {
+    try{
+      const enter = await this.usersService.loginUser(req);
+      return enter;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('users')
   @Get('/getuserslist')
   async getUsersList() {
     try{

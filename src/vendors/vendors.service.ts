@@ -56,6 +56,43 @@ export class VendorsService {
     }
   }
 
+  async loginVendor(req: vendorDto) {
+    try{
+      const enter = await this.vendorModel.findOne({
+        $or: [
+          {email: req.email},
+          {mobileNum: req.mobileNum},
+          {password: req.password},
+        ]
+      });
+      if(enter) {
+        if(enter.password == req.password) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'login successfully',
+          data: enter,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          msg: "Invalid Password",
+        }
+      }
+
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
   async getVendor() {
     try {
       const data = await this.vendorModel.find();

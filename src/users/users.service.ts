@@ -125,6 +125,42 @@ export class UsersService {
     }
   }
 
+  async loginUser(req: userDto) {
+    try{
+      const enter = await this.userModel.findOne({
+        $or: [
+          {email: req.email},
+          {password: req.password},
+          {contactNumber: req.contactNumber},
+        ]
+      });
+      if(enter) {
+        if(enter.password == req.password) {
+          return {
+            statusCode: HttpStatus.OK,
+            msg: "Login Success",
+            Data: enter,
+          }
+        } else {
+          return {
+            statusCode: HttpStatus.UNAUTHORIZED,
+            msg: "Invalid Password",
+          }
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
   async getUserslist() {
     try {
       const add = await this.userModel.find();

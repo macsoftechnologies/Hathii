@@ -4,13 +4,15 @@ export class vendorDto {
   @ApiProperty()
   vendorId: string;
   @ApiProperty()
-  vendorName:string
+  vendorName:string;
   @ApiProperty()
   mobileNum: string;
   @ApiProperty()
-  email:string
+  email:string;
   @ApiProperty()
-  shopName:string
+  password: string;
+  @ApiProperty()
+  shopName:string;
   @ApiProperty()
   shopTimings: [];
   @ApiProperty()
@@ -18,9 +20,9 @@ export class vendorDto {
   @ApiProperty()
   modeOfBussiness: string;
   @ApiProperty()
-  Gstin:string
+  Gstin:string;
   @ApiProperty()
-  shopProof:string
+  shopProof:string;
   @ApiProperty()
   blogPost: [];
   @ApiProperty()
@@ -28,6 +30,5 @@ export class vendorDto {
   @ApiProperty()
   color:[]
   @ApiProperty()
-  rating:string 
-
+  rating:string;
 }

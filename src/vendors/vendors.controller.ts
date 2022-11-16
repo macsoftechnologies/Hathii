@@ -39,6 +39,22 @@ export class VendorsController {
     }
   }
 
+  @ApiTags('vendor')
+  @ApiBody({
+    type: vendorDto
+  })
+  @Post('/vendorlogin')
+  async vendorLogin(@Body() req: vendorDto) {
+    try{
+      const enter = await this.vendorsService.loginVendor(req);
+      return enter;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
 
   @ApiTags('vendor')
   @Get('GetVendors')

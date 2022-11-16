@@ -6,13 +6,15 @@ export class vendor extends Document {
   @Prop({ required: true, unique: true, default: uuid })
   vendorId: string;
   @Prop()
-  vendorName:string
+  vendorName:string;
   @Prop()
   mobileNum: string;
   @Prop()
-  email:string
+  email:string;
   @Prop()
-  shopName:string
+  password: string;
+  @Prop()
+  shopName:string;
   @Prop()
   shopTimings: [];
   @Prop()
@@ -20,15 +22,15 @@ export class vendor extends Document {
   @Prop()
   modeOfBussiness: string;
   @Prop()
-  Gstin:string
+  Gstin:string;
   @Prop()
-  shopProof:string
+  shopProof:string;
   @Prop()
   blogPost: [];
   @Prop()
   shopPhoto: [];
   @Prop()
-  color:[]
+  color:[];
   @Prop()
   rating:string;
 }
