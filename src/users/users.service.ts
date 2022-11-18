@@ -130,12 +130,11 @@ export class UsersService {
       const enter = await this.userModel.findOne({
         $or: [
           {email: req.email},
-          {password: req.password},
           {contactNumber: req.contactNumber},
         ]
       });
       if(enter) {
-        if(enter.password == req.password) {
+        if(enter.password === req.password) {
           return {
             statusCode: HttpStatus.OK,
             msg: "Login Success",

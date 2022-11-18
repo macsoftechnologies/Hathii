@@ -29,11 +29,11 @@ export class VendorsService {
 
           req.blogPost = attachmentFile;
         }
-        if(image.color && image.color[0]){
-          const attachmentFile= await this.sharedService.saveFile(
+        if (image.color && image.color[0]) {
+          const attachmentFile = await this.sharedService.saveFile(
             image.color[0],
           );
-          req.color=attachmentFile;
+          req.color = attachmentFile;
         }
       }
 
@@ -57,39 +57,36 @@ export class VendorsService {
   }
 
   async loginVendor(req: vendorDto) {
-    try{
-      const enter = await this.vendorModel.findOne({
-        $or: [
-          {email: req.email},
-          {mobileNum: req.mobileNum},
-          {password: req.password},
-        ]
-      });
-      if(enter) {
-        if(enter.password == req.password) {
-        return {
-          statusCode: HttpStatus.OK,
-          msg: 'login successfully',
-          data: enter,
+    try {
+      const enter = await this.vendorModel
+        .findOne({
+          $or: [{ email: req.email }, { mobileNum: req.mobileNum }],
+        })
+        .lean();
+      if (enter) {
+        if (enter.password === req.password) {
+          return {
+            statusCode: HttpStatus.OK,
+            msg: 'login successfully',
+            Data: enter,
+          };
+        } else {
+          return {
+            statusCode: HttpStatus.UNAUTHORIZED,
+            msg: 'Invalid Password',
+          };
         }
-      } else {
-        return {
-          statusCode: HttpStatus.UNAUTHORIZED,
-          msg: "Invalid Password",
-        }
-      }
-
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
@@ -121,7 +118,7 @@ export class VendorsService {
           statusCode: HttpStatus.OK,
           Message: 'deleted Sucessfully',
           data: {
-            vend
+            vend,
           },
         };
       }
@@ -172,11 +169,11 @@ export class VendorsService {
 
           req.blogPost = attachmentFile;
         }
-        if(image.color && image.color[0]){
-          const attachmentFile=await this.sharedService.saveFile(
+        if (image.color && image.color[0]) {
+          const attachmentFile = await this.sharedService.saveFile(
             image.color[0],
-          )
-          req.color=attachmentFile;
+          );
+          req.color = attachmentFile;
         }
       }
 
@@ -184,19 +181,19 @@ export class VendorsService {
         { vendorId: req.vendorId },
         {
           $set: {
-            vendorName:req.vendorName,
-            mobileNum:req.mobileNum,
-            email:req.email,
-            shopName:req.shopName,
-            shopTimings:req.shopTimings,
-            addLocation:req.addLocation,
-            modeOfBussiness:req.modeOfBussiness,
-            Gstin:req.Gstin,
-            shopProof:req.shopProof,
-            blogPost:req.blogPost,
-            shopPhoto:req.shopPhoto,
-            color:req.color,
-            rating:req.rating
+            vendorName: req.vendorName,
+            mobileNum: req.mobileNum,
+            email: req.email,
+            shopName: req.shopName,
+            shopTimings: req.shopTimings,
+            addLocation: req.addLocation,
+            modeOfBussiness: req.modeOfBussiness,
+            Gstin: req.Gstin,
+            shopProof: req.shopProof,
+            blogPost: req.blogPost,
+            shopPhoto: req.shopPhoto,
+            color: req.color,
+            rating: req.rating,
           },
         },
       );
