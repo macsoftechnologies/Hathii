@@ -38,10 +38,30 @@ export class VendorsService {
       }
 
       const addVendorResp = await this.vendorModel.create(req);
-      if (addVendorResp) {
+      const encrypt = await this.sharedService.encryption(req.password);
+      const replacement = await this.vendorModel.replaceOne({password: addVendorResp.password},{
+        vendorId: addVendorResp.vendorId,
+        vendorName: addVendorResp.vendorName,
+        mobileNum: addVendorResp.mobileNum,
+        email: addVendorResp.email,
+        password: encrypt.encryptedText,
+        shopName: addVendorResp.shopName,
+        shopTimings: addVendorResp.shopTimings,
+        addLocation: addVendorResp.addLocation,
+        modeOfBussiness: addVendorResp.modeOfBussiness,
+        Gstin: addVendorResp.Gstin,
+        shopProof: addVendorResp.shopProof,
+        blogPost: addVendorResp.blogPost,
+        shopPhoto: addVendorResp.shopPhoto,
+        rating: addVendorResp.rating
+      });
+
+
+      if (replacement) {
         return {
           statusCode: HttpStatus.OK,
           addVendorRes: addVendorResp,
+          encryptedData: encrypt,
         };
       }
       return {
@@ -63,12 +83,14 @@ export class VendorsService {
           $or: [{ email: req.email }, { mobileNum: req.mobileNum }],
         })
         .lean();
+        const encrypt = await this.sharedService.encryption(req.password);
       if (enter) {
-        if (enter.password === req.password) {
+        if (encrypt.encryptedText === enter.password) {
           return {
             statusCode: HttpStatus.OK,
             msg: 'login successfully',
             Data: enter,
+            encryptedData: encrypt,
           };
         } else {
           return {

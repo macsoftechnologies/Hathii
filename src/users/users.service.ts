@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { SharedService } from 'src/shared/shared.service';
 import { orderDto } from './dto/order.dto';
 import { userDto } from './dto/users.dto';
 import { order } from './schema/order.schema';
@@ -11,6 +12,7 @@ export class UsersService {
   constructor(
     @InjectModel(order.name) private orderModel: Model<order>,
     @InjectModel(User.name) private userModel: Model<User>,
+    private sharedService: SharedService,
   ) {}
 
   async createOrder(req: orderDto) {
@@ -105,13 +107,22 @@ export class UsersService {
   async registerUser(req: userDto) {
     try {
       const add = await this.userModel.create(req);
+      const encrypt = await this.sharedService.encryption(req.password);
+      const replacement = await this.userModel.replaceOne({password: add.password},{
+        firstName: add.firstName,
+        lastName: add.lastName,
+        email: add.email,
+        password: encrypt.encryptedText,
+        contactNumber: add.contactNumber,
+        address: add.address
+      });
       // console.log(add)
-      if (add) {
-        return {
-          statusCode: HttpStatus.OK,
-          msg: 'User Registered Successfully',
-          data: add,
-        };
+      if (replacement) {
+          return {
+            statusCode: HttpStatus.OK,
+            msg: 'User Registered Successfully',
+            data: add,
+          };
       }
       return {
         statusCode: HttpStatus.BAD_REQUEST,
@@ -126,37 +137,36 @@ export class UsersService {
   }
 
   async loginUser(req: userDto) {
-    try{
+    try {
       const enter = await this.userModel.findOne({
-        $or: [
-          {email: req.email},
-          {contactNumber: req.contactNumber},
-        ]
+        $or: [{ email: req.email }, { contactNumber: req.contactNumber }],
       });
-      if(enter) {
-        if(enter.password === req.password) {
+      const encrypt = await this.sharedService.encryption(req.password);
+      console.log(encrypt);
+      if (encrypt) {
+        if (encrypt.encryptedText === enter.password) {
           return {
             statusCode: HttpStatus.OK,
-            msg: "Login Success",
+            msg: 'Login Success',
             Data: enter,
-          }
+          };
         } else {
           return {
             statusCode: HttpStatus.UNAUTHORIZED,
-            msg: "Invalid Password",
-          }
+            msg: 'Invalid Password',
+          };
         }
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 

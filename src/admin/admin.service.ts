@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { SharedService } from 'src/shared/shared.service';
 import { adminDto } from './Dto/admin.dto';
 import { adminproductDto } from './Dto/adminproduct.dto';
 import { complaintDto } from './Dto/complaints.dto';
@@ -24,12 +25,19 @@ export class AdminService {
     @InjectModel(feedback.name) private feedbackModel: Model<feedback>,
     @InjectModel(complaint.name) private complaintModel: Model<complaint>,
     @InjectModel(rewardpoint.name) private rewardpointModel: Model<rewardpoint>,
+    private sharedService: SharedService,
   ) {}
 
   async Create(req: adminDto) {
     try {
       const registerRes = await this.adminModel.create(req);
-      if (registerRes) {
+      const encrypt = await this.sharedService.encryption(req.password);
+      const replacement = await this.adminModel.replaceOne({password: registerRes.password},{
+        email: registerRes.email,
+        password: encrypt.encryptedText,
+        mobileNum: registerRes.mobileNum,
+      })
+      if (replacement) {
         return {
           statusCode: HttpStatus.OK,
           message: 'admin  Registered Successfully',
@@ -63,8 +71,9 @@ export class AdminService {
           ],
         })
         .lean();
+        const encrypt = await this.sharedService.encryption(req.password);
       if (loginRes) {
-        if (loginRes.password === req.password) {
+        if (encrypt.encryptedText === loginRes.password) {
           return {
             statusCode: HttpStatus.OK,
             message: 'Login SuccessFull',

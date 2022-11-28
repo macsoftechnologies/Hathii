@@ -8,6 +8,7 @@ import { contact, contactSchema } from './Schema/contact.schema';
 import { feedback, feedbackSchema } from './Schema/feedback.schema';
 import { complaint, complaintSchema } from './Schema/complaints.schema';
 import { rewardpoint, rewardpointSchema } from './Schema/rewardpoint.schema';
+import { SharedService } from 'src/shared/shared.service';
 
 @Module({
   imports:[MongooseModule.forFeature([{name:admin.name ,schema:adminSchema},
@@ -17,6 +18,6 @@ import { rewardpoint, rewardpointSchema } from './Schema/rewardpoint.schema';
   {name:complaint.name,schema:complaintSchema},
   {name:rewardpoint.name,schema:rewardpointSchema}])],
   controllers: [AdminController],
-  providers: [AdminService]
+  providers: [AdminService, SharedService]
 })
 export class AdminModule {}

@@ -4,11 +4,12 @@ import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { order, orderSchema } from './schema/order.schema';
 import { User, userSchema } from './schema/users.schema';
+import { SharedService } from 'src/shared/shared.service';
 
 @Module({
   imports:[MongooseModule.forFeature([{name:order.name,schema:orderSchema}]),
             MongooseModule.forFeature([{name: User.name, schema: userSchema}])],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService, SharedService]
 })
 export class UsersModule {}
