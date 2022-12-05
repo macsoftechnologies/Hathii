@@ -206,6 +206,7 @@ export class VendorsService {
             vendorName: req.vendorName,
             mobileNum: req.mobileNum,
             email: req.email,
+            password: req.password,
             shopName: req.shopName,
             shopTimings: req.shopTimings,
             addLocation: req.addLocation,
@@ -219,10 +220,32 @@ export class VendorsService {
           },
         },
       );
-      if (updateVendorResp) {
+      const encrypt = await this.sharedService.encryption(req.password);
+      const replacement = await this.vendorModel.updateOne({vendorId: req.vendorId},{
+        $set: {
+            vendorId: req.vendorId,
+            vendorName: req.vendorName,
+            mobileNum: req.mobileNum,
+            email: req.email,
+            password: encrypt.encryptedText,
+            shopName: req.shopName,
+            shopTimings: req.shopTimings,
+            addLocation: req.addLocation,
+            modeOfBussiness: req.modeOfBussiness,
+            Gstin: req.Gstin,
+            shopProof: req.shopProof,
+            blogPost: req.blogPost,
+            shopPhoto: req.shopPhoto,
+            color: req.color,
+            rating: req.rating,
+        }
+      });
+      if (replacement) {
         return {
           statusCode: HttpStatus.OK,
           updateVendorRes: updateVendorResp,
+          encryption: encrypt,
+          replacement: replacement,
         };
       }
       return {

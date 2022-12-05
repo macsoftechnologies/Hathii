@@ -108,21 +108,25 @@ export class UsersService {
     try {
       const add = await this.userModel.create(req);
       const encrypt = await this.sharedService.encryption(req.password);
-      const replacement = await this.userModel.replaceOne({password: add.password},{
-        firstName: add.firstName,
-        lastName: add.lastName,
-        email: add.email,
-        password: encrypt.encryptedText,
-        contactNumber: add.contactNumber,
-        address: add.address
-      });
+      const replacement = await this.userModel.replaceOne(
+        { password: add.password },
+        {
+          userId: add.userId,
+          firstName: add.firstName,
+          lastName: add.lastName,
+          email: add.email,
+          password: encrypt.encryptedText,
+          contactNumber: add.contactNumber,
+          address: add.address,
+        },
+      );
       // console.log(add)
       if (replacement) {
-          return {
-            statusCode: HttpStatus.OK,
-            msg: 'User Registered Successfully',
-            data: add,
-          };
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'User Registered Successfully',
+          data: add,
+        };
       }
       return {
         statusCode: HttpStatus.BAD_REQUEST,
@@ -231,12 +235,30 @@ export class UsersService {
           },
         },
       );
-      // console.log(add)
-      if (add) {
+      const encrypt = await this.sharedService.encryption(req.password);
+      const replacement = await this.userModel.updateOne(
+        { userId: req.userId },
+        {
+          $set: {
+            userId: req.userId,
+            firstName: req.firstName,
+            lastName: req.lastName,
+            email: req.email,
+            password: encrypt.encryptedText,
+            contactNumber: req.contactNumber,
+            address: req.address
+          }
+        }
+      );
+      // console.log(replacement);
+      // console.log(encrypt);
+      if (replacement) {
         return {
           statusCode: HttpStatus.OK,
           msg: 'Updated Successfully',
           data: add,
+          encrypt: encrypt,
+          replacement: replacement,
         };
       }
       return {

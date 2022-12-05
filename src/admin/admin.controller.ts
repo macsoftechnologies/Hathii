@@ -51,7 +51,22 @@ async login(@Body() req: adminDto){
     }
   }
  
-
+  @ApiTags('admin')
+  @ApiBody({
+    type: adminDto
+  })
+  @Post('/updateAdmin')
+  async updateAdmin(@Body() req: adminDto) {
+    try{
+      const moderate = await this.adminService.adminUpdate(req);
+      return moderate;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
 
 
   @ApiTags('admin')

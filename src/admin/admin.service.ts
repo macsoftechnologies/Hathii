@@ -33,6 +33,7 @@ export class AdminService {
       const registerRes = await this.adminModel.create(req);
       const encrypt = await this.sharedService.encryption(req.password);
       const replacement = await this.adminModel.replaceOne({password: registerRes.password},{
+        adminId: registerRes.adminId,
         email: registerRes.email,
         password: encrypt.encryptedText,
         mobileNum: registerRes.mobileNum,
@@ -95,6 +96,45 @@ export class AdminService {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: error.message,
       };
+    }
+  }
+
+  async adminUpdate(req: adminDto) {
+    try{
+      const moderate = await this.adminModel.updateOne({adminId: req.adminId},{
+        $set: {
+          adminId: req.adminId,
+          email: req.email,
+          password: req.password,
+          mobileNum: req.mobileNum,
+        }
+      });
+      const encrypt = await this.sharedService.encryption(req.password);
+      const replacement = await this.adminModel.updateOne(
+        { password: req.password },
+        {
+          $set: {
+            adminId: req.adminId,
+            email: req.email,
+            password: encrypt.encryptedText,
+            mobileNum: req.mobileNum
+          }
+        }
+      );
+      if(replacement) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Updated Succesfully",
+          data: moderate,
+          encrypt: encrypt,
+          replacement: replacement,
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
     }
   }
 
