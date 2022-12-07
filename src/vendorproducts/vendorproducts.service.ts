@@ -1,10 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { categoryDto } from 'src/category/dto/categoty.dto';
-import { Category } from 'src/category/schema/category.schema';
-import { Subcategory } from 'src/category/schema/subcategory.schema';
-import { rating } from 'src/rating/Schema/rating.schema';
 import { inventoryManagementDto } from './dto/inventoryManangement.dto';
 import { vendorproductDto } from './dto/vendorproduct.dto';
 import { inventoryManagement } from './schema/inventoryManagemement.schema';

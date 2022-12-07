@@ -11,7 +11,6 @@ export class vendor extends Document {
   mobileNum: string;
   @Prop()
   email:string;
-  
   @Prop()
   password: string;
   @Prop()

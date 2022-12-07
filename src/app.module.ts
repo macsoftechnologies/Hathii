@@ -10,11 +10,12 @@ import { VendorsModule } from './vendors/vendors.module';
 import { VendorproductsModule } from './vendorproducts/vendorproducts.module';
 import { UsersModule } from './users/users.module';
 import { CategoryModule } from './category/category.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [MongooseModule.forRoot('mongodb+srv://macsof:macsof@nextlevelcarwash.yjs3i.mongodb.net/hathii?retryWrites=true&w=majority'),
  
-   AdminModule,   ServicesModule, ServicesModule, RatingModule, ServiceproviderModule,VendorsModule, VendorproductsModule, UsersModule, CategoryModule],
+   AdminModule,   ServicesModule, ServicesModule, RatingModule, ServiceproviderModule,VendorsModule, VendorproductsModule, UsersModule, CategoryModule, ChatModule],
   controllers: [AppController],
   providers: [AppService], 
 })
