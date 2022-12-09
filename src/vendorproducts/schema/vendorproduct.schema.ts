@@ -25,7 +25,7 @@ export class vendorproduct extends Document{
     categoryId:string
     @Prop()
     subCategoryId: string
-    @Prop({trim: true,strict:true,type:productDetails})
+    @Prop({trim: true, strict:true, type:productDetails})
     productDetails:{
         type:any 
     }

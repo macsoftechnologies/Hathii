@@ -243,7 +243,6 @@ export class VendorproductsService {
           { price: new RegExp('.*' + req.price + '.*', 'i') },
           { discount: new RegExp('.*' + req.discount + '.*', 'i') },
           { shopType: new RegExp('.*' + req.shopType + '.*', 'i') },
-          { productDetails: new RegExp('.*' + req.productDetails + '.*', 'i') },
         ],
       });
       if (search) {
