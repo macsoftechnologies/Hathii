@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
 import { chatDto } from './dto/chat.dto';
+import { requestDto } from './dto/request.dto';
 
 @Controller('chat')
 export class ChatController {
@@ -80,6 +81,88 @@ export class ChatController {
   async deleteChat(@Body() req: chatDto) {
     try{
       const eliminate = await this.chatService.deletechat(req);
+      return eliminate;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('chat')
+  @ApiBody({
+    type: requestDto
+  })
+  @Post('/addRequest')
+  async addRequest(@Body() req: requestDto) {
+    try{
+      const add = await this.chatService.addrequest(req);
+      return add;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('chat')
+  @Get('/getRequestsList')
+  async getRequestsList() {
+    try{
+      const add = await this.chatService.getrequestslist();
+      return add;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('chat')
+  @ApiBody({
+    type: requestDto
+  })
+  @Post('/getRequestById')
+  async getRequestById(@Body() req: requestDto) {
+    try{
+      const getRequest = await this.chatService.getrequest(req);
+      return getRequest;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('chat')
+  @ApiBody({
+    type: requestDto
+  })
+  @Post('/updateRequest')
+  async updateRequest(@Body() req: requestDto) {
+    try{
+      const moderate = await this.chatService.updaterequest(req);
+      return moderate;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('chat')
+  @ApiBody({
+    type: requestDto
+  })
+  @Post('/deleteRequest')
+  async deleteRequest(@Body() req: requestDto) {
+    try{
+      const eliminate = await this.chatService.deleterequest(req);
       return eliminate;
     } catch(error) {
       return {
