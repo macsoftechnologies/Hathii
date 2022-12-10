@@ -21,12 +21,12 @@ export class MongooseConfigService implements MongooseOptionsFactory{
           autoIndex: true,
           //poolSize: 10,
           //bufferMaxEntries: 0,
-          connectTimeoutMS: 10000,
-          socketTimeoutMS: 45000,
+          // connectTimeoutMS: 10000,
+          // socketTimeoutMS: 45000,
           //useFindAndModify: false,
           useUnifiedTopology: true,
          // maxPoolSize: 50,
-          wtimeoutMS: 2500 
+          // wtimeoutMS: 2500 
         };
       }
     }
