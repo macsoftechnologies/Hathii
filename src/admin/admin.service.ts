@@ -31,14 +31,14 @@ export class AdminService {
   async Create(req: adminDto) {
     try {
       const registerRes = await this.adminModel.create(req);
-      const encrypt = await this.sharedService.encryption(req.password);
-      const replacement = await this.adminModel.replaceOne({password: registerRes.password},{
-        adminId: registerRes.adminId,
-        email: registerRes.email,
-        password: encrypt.encryptedText,
-        mobileNum: registerRes.mobileNum,
-      })
-      if (replacement) {
+      // const encrypt = await this.sharedService.encryption(req.password);
+      // const replacement = await this.adminModel.replaceOne({password: registerRes.password},{
+      //   adminId: registerRes.adminId,
+      //   email: registerRes.email,
+      //   password: encrypt.encryptedText,
+      //   mobileNum: registerRes.mobileNum,
+      // })
+      if (registerRes) {
         return {
           statusCode: HttpStatus.OK,
           message: 'admin  Registered Successfully',
@@ -67,30 +67,29 @@ export class AdminService {
         .findOne({
           $or: [
             { email: req.email },
-            { password: req.password },
             { mobileNum: req.mobileNum },
           ],
         })
         .lean();
-        const encrypt = await this.sharedService.encryption(req.password);
+        // const encrypt = await this.sharedService.encryption(req.password);
       if (loginRes) {
-        if (encrypt.encryptedText === loginRes.password) {
+        // if (encrypt.encryptedText === loginRes.password) {
           return {
             statusCode: HttpStatus.OK,
             message: 'Login SuccessFull',
             login: loginRes,
+            // encryptedData: encrypt,
           };
         }
         return {
           statusCode: HttpStatus.UNAUTHORIZED,
           message: 'Invalid Password',
         };
-      }
 
-      return {
-        statusCode: HttpStatus.UNAUTHORIZED,
-        message: 'admin  not found',
-      };
+      // return {
+      //   statusCode: HttpStatus.UNAUTHORIZED,
+      //   message: 'admin  not found',
+      // };
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -99,44 +98,44 @@ export class AdminService {
     }
   }
 
-  async adminUpdate(req: adminDto) {
-    try{
-      const moderate = await this.adminModel.updateOne({adminId: req.adminId},{
-        $set: {
-          adminId: req.adminId,
-          email: req.email,
-          password: req.password,
-          mobileNum: req.mobileNum,
-        }
-      });
-      const encrypt = await this.sharedService.encryption(req.password);
-      const replacement = await this.adminModel.updateOne(
-        { password: req.password },
-        {
-          $set: {
-            adminId: req.adminId,
-            email: req.email,
-            password: encrypt.encryptedText,
-            mobileNum: req.mobileNum
-          }
-        }
-      );
-      if(replacement) {
-        return {
-          statusCode: HttpStatus.OK,
-          msg: "Updated Succesfully",
-          data: moderate,
-          encrypt: encrypt,
-          replacement: replacement,
-        }
-      }
-    } catch(error) {
-      return {
-        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error,
-      }
-    }
-  }
+  // async adminUpdate(req: adminDto) {
+  //   try{
+  //     const moderate = await this.adminModel.updateOne({adminId: req.adminId},{
+  //       $set: {
+  //         adminId: req.adminId,
+  //         email: req.email,
+  //         password: req.password,
+  //         mobileNum: req.mobileNum,
+  //       }
+  //     });
+  //     const encrypt = await this.sharedService.encryption(req.password);
+  //     const replacement = await this.adminModel.updateOne(
+  //       { password: req.password },
+  //       {
+  //         $set: {
+  //           adminId: req.adminId,
+  //           email: req.email,
+  //           password: encrypt.encryptedText,
+  //           mobileNum: req.mobileNum
+  //         }
+  //       }
+  //     );
+  //     if(replacement) {
+  //       return {
+  //         statusCode: HttpStatus.OK,
+  //         msg: "Updated Succesfully",
+  //         data: moderate,
+  //         encrypt: encrypt,
+  //         replacement: replacement,
+  //       }
+  //     }
+  //   } catch(error) {
+  //     return {
+  //       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+  //       msg: error,
+  //     }
+  //   }
+  // }
 
   async addadminProd(req: adminproductDto, image) {
     try {
