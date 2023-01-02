@@ -10,6 +10,8 @@ export class vendorproduct extends Document{
     @Prop({required: true, unique: true, default: uuid})
     vendorProdId:string
     @Prop()
+    vendorId: string
+    @Prop()
     vendorName:string
     @Prop()
     productName:string

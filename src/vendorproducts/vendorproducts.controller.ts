@@ -66,7 +66,7 @@ export class VendorproductsController {
   @Post('/updatevendorProduct')
   async editVen(@Body() req:vendorproductDto){
     try{
-      const result=await this.vendorproductsService.deleteProd(req)
+      const result=await this.vendorproductsService.editvendProd(req)
       return result
     }catch(error){
       return{
@@ -138,6 +138,23 @@ export class VendorproductsController {
     try{
       const inventorymanagement = await this.vendorproductsService.inventoryManage(req);
       return inventorymanagement;
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: vendorproductDto
+  })
+  @Post('/stockalert')
+  async stockAlert(@Body() req: vendorproductDto) {
+    try{
+      const stock = await this.vendorproductsService.stockalert(req);
+      return stock
     } catch(error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

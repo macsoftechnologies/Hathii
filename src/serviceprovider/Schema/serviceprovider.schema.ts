@@ -26,7 +26,8 @@ export class serviceProv extends Document{
     aadharNumber:string
     @Prop()
     labourcard:string
-
+    @Prop()
+    themeId: string
 
 }
 export const serviceProvSchema=SchemaFactory.createForClass(serviceProv)

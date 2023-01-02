@@ -1,5 +1,5 @@
 import { Body, Controller, Get, HttpStatus, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import {  AnyFilesInterceptor} from '@nestjs/platform-express'
+import {  AnyFilesInterceptor, FileFieldsInterceptor} from '@nestjs/platform-express'
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -8,8 +8,11 @@ import { adminDto } from './Dto/admin.dto';
 import { adminproductDto } from './Dto/adminproduct.dto';
 import { complaintDto } from './Dto/complaints.dto';
 import { contactDto } from './Dto/contact.dto';
+import { couponDto } from './Dto/coupon.dto';
 import { feedbackDto } from './Dto/feedback.dto';
+import { notificationsDto } from './Dto/notifications.dto';
 import { rewardpointDto } from './Dto/rewardpoint.dto';
+import { themeDto } from './Dto/theme.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -453,4 +456,255 @@ async login(@Body() req: adminDto){
       }
     }
    }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: couponDto
+   })
+   @Post('/addcoupon')
+   async addCoupons(@Body() req: couponDto) {
+    try{
+      const addcoupon = await this.adminService.addCoupon(req);
+      return addcoupon
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @Get('/getcouponslist')
+   async getCoupons() {
+    try{
+      const addcoupon = await this.adminService.getCouponsList();
+      return addcoupon
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: couponDto
+   })
+   @Post('/getcouponbyid')
+   async getCouponById(@Body() req: couponDto) {
+    try{
+      const getcoupon = await this.adminService.getCouponById(req);
+      return getcoupon
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: couponDto
+   })
+   @Post('/updatecoupon')
+   async updateCoupon(@Body() req: couponDto) {
+    try{
+      const editcoupon = await this.adminService.editCoupon(req);
+      return editcoupon
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: couponDto
+   })
+   @Post('/deletecoupon')
+   async deleteCoupon(@Body() req: couponDto) {
+    try{
+      const deletecoupon = await this.adminService.removeCoupon(req);
+      return deletecoupon
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: notificationsDto
+   })
+   @Post('/addNotification')
+   async addNotification(@Body() req: notificationsDto) {
+    try{
+      const addnot = await this.adminService.addNot(req);
+      return addnot
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: notificationsDto
+   })
+   @Get('/getNotificationList')
+   async getNotificationList() {
+    try{
+      const getnots = await this.adminService.getNot();
+      return getnots
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: notificationsDto
+   })
+   @Post('/getNotificationbyid')
+   async getNotificationById(@Body() req: notificationsDto) {
+    try{
+      const getnot = await this.adminService.getNotById(req);
+      return getnot
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: notificationsDto
+   })
+   @Post('/updateNotification')
+   async updateNotification(@Body() req: notificationsDto) {
+    try{
+      const updatenot = await this.adminService.updateNot(req);
+      return updatenot
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: notificationsDto
+   })
+   @Post('/deleteNotification')
+   async deleteNotification(@Body() req: notificationsDto) {
+    try{
+      const deletenot = await this.adminService.deleteNot(req);
+      return deletenot
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @ApiBody({
+    type: themeDto
+   })
+   @Post('/addtheme')
+   @UseInterceptors(FileFieldsInterceptor([{name: 'themeImage'}, {name: 'themeColor'}]))
+   async addTheme(@Body() req: themeDto, @UploadedFiles() image) {
+    try{
+      const add = await this.adminService.addThemes(req, image);
+      return add
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
+   @Get('/themesList')
+   async themesList() {
+    try{
+      const getThem = await this.adminService.getThemes();
+      return getThem
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type: themeDto
+   })
+  @Post('/getByThemeId')
+  async getTheme(@Body() req: themeDto) {
+    try{
+      const getById = await this.adminService.getThemeById(req);
+      return getById
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type: themeDto
+   })
+  @Post('/updateTheme')
+  @UseInterceptors(FileFieldsInterceptor([{name: 'themeImage'}, {name: 'themeColor'}]))
+  async updateTheme(@Body() req: themeDto, @UploadedFiles() image) {
+    try{
+      const moderate = await this.adminService.updatetheme(req, image);
+      return moderate
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type: themeDto
+  })
+  @Post('/deleteTheme')
+  async removeTheme(@Body() req:themeDto) {
+    try{
+      const eliminate = await this.adminService.deleteTheme(req);
+      return eliminate
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
 }

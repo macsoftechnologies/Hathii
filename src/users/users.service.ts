@@ -70,9 +70,20 @@ export class UsersService {
 
   async editOrder(req: orderDto) {
     try {
-      const editOrder = await this.orderModel.updateOne({
-        orderId: req.orderId,
-      });
+      const editOrder = await this.orderModel.updateOne(
+        { orderId: req.orderId },
+        {
+          $set: {
+            userId: req.userId,
+            orderQuantity: req.orderQuantity,
+            time: req.time,
+            date: req.date,
+            productId: req.productId,
+            vendorId: req.vendorId,
+            status: req.status,
+          },
+        },
+      );
       if (editOrder) {
         return {
           statusCode: HttpStatus.OK,
@@ -246,9 +257,9 @@ export class UsersService {
             email: req.email,
             password: encrypt.encryptedText,
             contactNumber: req.contactNumber,
-            address: req.address
-          }
-        }
+            address: req.address,
+          },
+        },
       );
       // console.log(replacement);
       // console.log(encrypt);

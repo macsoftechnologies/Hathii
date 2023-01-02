@@ -23,7 +23,8 @@ export class serviceProvDto{
     aadharNumber:string
     @ApiProperty()
     labourcard:string
-    
+    @ApiProperty()
+    themeId: string
     
 }
 

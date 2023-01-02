@@ -126,9 +126,8 @@ export class ServiceproviderService {
             console.log(req);
             // return false;
             const serviceProd = await this.serviceProvModel.updateOne({providerId:req.providerId},{$set:{ email:req.email, phoneNumber:req.phoneNumber, name:req.name,
-                experience:req.experience,  minwageRating: req.minwageRating, location: req.location, skills: req.skills, rating: req.rating, aadharNumber:req.aadharNumber, labourcard: req.labourcard}})
-               
-
+                experience:req.experience,  minwageRating: req.minwageRating, location: req.location, skills: req.skills, rating: req.rating, aadharNumber:req.aadharNumber, labourcard: req.labourcard,
+                themeId: req.themeId}});
             if (serviceProd) {
                 return {
                     statusCode: HttpStatus.OK,

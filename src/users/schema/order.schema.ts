@@ -13,7 +13,15 @@ export class order extends Document{
     @Prop()
     time:string
     @Prop()
-    rewardpoints:string
+    rewardPoints: string
+    @Prop()
+    date:string
+    @Prop()
+    productId: string
+    @Prop()
+    vendorId: string
+    @Prop()
+    status: string
 }
 
 export const orderSchema=SchemaFactory.createForClass(order)

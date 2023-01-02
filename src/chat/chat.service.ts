@@ -198,7 +198,9 @@ export class ChatService {
         try{
             const moderate = await this.requestModel.updateOne({requestId: req.requestId},{
                 $set: {
-                    request: req.request,
+                    productId: req.productId,
+                    productName: req.productName,
+                    quantity: req.quantity,
                     providerId: req.providerId,
                     vendorId: req.vendorId
                 }

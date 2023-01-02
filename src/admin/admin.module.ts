@@ -9,6 +9,9 @@ import { feedback, feedbackSchema } from './Schema/feedback.schema';
 import { complaint, complaintSchema } from './Schema/complaints.schema';
 import { rewardpoint, rewardpointSchema } from './Schema/rewardpoint.schema';
 import { SharedService } from 'src/shared/shared.service';
+import { Notification, notificationSchema } from './Schema/notifications.schema';
+import { Coupon, couponSchema } from './Schema/coupon.schema';
+import { Theme, themeSchema } from './Schema/theme.schema';
 
 @Module({
   imports:[MongooseModule.forFeature([{name:admin.name ,schema:adminSchema},
@@ -16,7 +19,10 @@ import { SharedService } from 'src/shared/shared.service';
   {name:contact.name,schema:contactSchema},
   {name:feedback.name,schema:feedbackSchema},
   {name:complaint.name,schema:complaintSchema},
-  {name:rewardpoint.name,schema:rewardpointSchema}])],
+  {name:rewardpoint.name,schema:rewardpointSchema},
+  {name:Notification.name,schema:notificationSchema},
+  {name:Coupon.name,schema:couponSchema},
+  {name:Theme.name,schema:themeSchema}])],
   controllers: [AdminController],
   providers: [AdminService, SharedService]
 })

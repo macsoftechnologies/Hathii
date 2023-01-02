@@ -236,6 +236,41 @@ export class VendorproductsService {
     }
   }
 
+  async stockalert(req: vendorproductDto) {
+    try{
+      const alert = await this.vendorproductModel.findOne({vendorProdId: req.vendorProdId});
+      if(alert) {
+      if(alert.quantity <= 10) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Limited Stock.Please add products",
+          data: {
+            quantity: alert.quantity
+          }
+        }
+      } else {
+        return{
+          statusCode: HttpStatus.OK,
+          msg: "Products Stock is perfectly alright.",
+          data: {
+            quantity: alert.quantity
+          }
+        }
+      }
+    } else {
+      return {
+        statusCode: HttpStatus.NOT_FOUND,
+        msg: "We didn't find your products",
+      }
+    }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
   async searchProductsByPriceandShop(req: vendorproductDto) {
     try {
       const search = await this.vendorproductModel.find({

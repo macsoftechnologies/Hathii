@@ -6,14 +6,20 @@ import { adminDto } from './Dto/admin.dto';
 import { adminproductDto } from './Dto/adminproduct.dto';
 import { complaintDto } from './Dto/complaints.dto';
 import { contactDto } from './Dto/contact.dto';
+import { couponDto } from './Dto/coupon.dto';
 import { feedbackDto } from './Dto/feedback.dto';
+import { notificationsDto } from './Dto/notifications.dto';
 import { rewardpointDto } from './Dto/rewardpoint.dto';
+import { themeDto } from './Dto/theme.dto';
 import { admin } from './Schema/admin.schema';
 import { adminproduct } from './Schema/adminproduct.schema';
 import { complaint } from './Schema/complaints.schema';
 import { contact } from './Schema/contact.schema';
+import { Coupon } from './Schema/coupon.schema';
 import { feedback } from './Schema/feedback.schema';
+import { Notification } from './Schema/notifications.schema';
 import { rewardpoint } from './Schema/rewardpoint.schema';
+import { Theme } from './Schema/theme.schema';
 
 @Injectable()
 export class AdminService {
@@ -26,6 +32,10 @@ export class AdminService {
     @InjectModel(complaint.name) private complaintModel: Model<complaint>,
     @InjectModel(rewardpoint.name) private rewardpointModel: Model<rewardpoint>,
     private sharedService: SharedService,
+    @InjectModel(Notification.name)
+    private notificationModel: Model<Notification>,
+    @InjectModel(Coupon.name) private couponModel: Model<Coupon>,
+    @InjectModel(Theme.name) private themeModel: Model<Theme>,
   ) {}
 
   async Create(req: adminDto) {
@@ -65,26 +75,23 @@ export class AdminService {
     try {
       const loginRes = await this.adminModel
         .findOne({
-          $or: [
-            { email: req.email },
-            { mobileNum: req.mobileNum },
-          ],
+          $or: [{ email: req.email }, { mobileNum: req.mobileNum }],
         })
         .lean();
-        // const encrypt = await this.sharedService.encryption(req.password);
+      // const encrypt = await this.sharedService.encryption(req.password);
       if (loginRes) {
         // if (encrypt.encryptedText === loginRes.password) {
-          return {
-            statusCode: HttpStatus.OK,
-            message: 'Login SuccessFull',
-            login: loginRes,
-            // encryptedData: encrypt,
-          };
-        }
         return {
-          statusCode: HttpStatus.UNAUTHORIZED,
-          message: 'Invalid Password',
+          statusCode: HttpStatus.OK,
+          message: 'Login SuccessFull',
+          login: loginRes,
+          // encryptedData: encrypt,
         };
+      }
+      return {
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: 'Invalid Password',
+      };
 
       // return {
       //   statusCode: HttpStatus.UNAUTHORIZED,
@@ -598,13 +605,424 @@ export class AdminService {
       }
       return {
         statusCode: HttpStatus.BAD_REQUEST,
-        msg: "Invalid Request",
-      }
+        msg: 'Invalid Request',
+      };
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         Message: error,
       };
+    }
+  }
+
+  async addCoupon(req: couponDto) {
+    try {
+      const add = await this.couponModel.create(req);
+      if (add) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Couon added',
+          data: add,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async getCouponsList() {
+    try {
+      const getAll = await this.couponModel.find();
+      if (getAll) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Coupons List',
+          data: getAll,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async getCouponById(req: couponDto) {
+    try {
+      const getCoupon = await this.couponModel.findOne({
+        couponId: req.couponId,
+      });
+      if (getCoupon) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Coupon Details',
+          data: getCoupon,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async editCoupon(req: couponDto) {
+    try {
+      const moderate = await this.couponModel.updateOne(
+        { couponId: req.couponId },
+        {
+          $set: {
+            couponAmount: req.couponAmount,
+            userName: req.userName,
+            description: req.description,
+            coupons: req.coupons,
+          },
+        },
+      );
+      if (moderate) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Updated Succesfully',
+          data: moderate,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async removeCoupon(req: couponDto) {
+    try {
+      const remove = await this.couponModel.deleteOne({
+        couponId: req.couponId,
+      });
+      if (remove) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Deleted Successfully',
+          data: remove,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async addNot(req: notificationsDto) {
+    try {
+      const add = await this.notificationModel.create(req);
+      if (add) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Notification added',
+          data: add,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async getNot() {
+    try {
+      const add = await this.notificationModel.find();
+      if (add) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Notifications list',
+          data: add,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async getNotById(req: notificationsDto) {
+    try {
+      const add = await this.notificationModel.findOne({
+        notificationId: req.notificationId,
+      });
+      if (add) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Notification details',
+          data: add,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async updateNot(req: notificationsDto) {
+    try {
+      const moderate = await this.notificationModel.updateOne(
+        { notificationId: req.notificationId },
+        {
+          $set: {
+            vendorId: req.vendorId,
+            providerId: req.providerId,
+            notification: req.notification,
+            token: req.token,
+          },
+        },
+      );
+      if (moderate) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Updated Successfully',
+          data: moderate,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invlaid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async deleteNot(req: notificationsDto) {
+    try {
+      const remove = await this.notificationModel.deleteOne({
+        notificationId: req.notificationId,
+      });
+      if (remove) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Deleted Successfully',
+          data: remove,
+        };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async addThemes(req: themeDto, image) {
+    try{
+      if (image) {
+        if (image.themeImage && image.themeImage[0]) {
+          const attachmentFile = await this.sharedService.saveFile(
+            image.themeImage[0],
+          );
+          req.themeImage = attachmentFile;
+        }
+        if (image.themeColor && image.themeColor[0]) {
+          const attachmentFile = await this.sharedService.saveFile(
+            image.themeColor[0],
+          );
+
+          req.themeColor = attachmentFile;
+        }
+      }
+
+      const add = await this.themeModel.create(req);
+      if(add) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Theme added Successfully",
+          data: add,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  async getThemes() {
+    try{
+      const getAll = await this.themeModel.find();
+      if(getAll) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "List of Themes",
+          data: getAll,
+        }
+      } else{
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  async getThemeById(req: themeDto) {
+    try{
+      const getIt = await this.themeModel.findOne({themeId: req.themeId});
+      if(getIt) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Details of the theme",
+          data: getIt,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  async updatetheme(req: themeDto, image) {
+    try{
+
+      if (image) {
+        if (image.themeImage && image.themeImage[0]) {
+          const attachmentFile = await this.sharedService.saveFile(
+            image.themeImage[0],
+          );
+          req.themeImage = attachmentFile;
+        }
+        if (image.themeColor && image.themeColor[0]) {
+          const attachmentFile = await this.sharedService.saveFile(
+            image.themeColor[0],
+          );
+
+          req.themeColor = attachmentFile;
+        }
+      }
+
+      const moderate = await this.themeModel.updateOne({themeId: req.themeId},{
+        $set: {
+          themeImage: req.themeImage,
+          themeColor: req.themeColor,
+        }
+      });
+      if(moderate) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Updated Successfully",
+          data: moderate,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  async deleteTheme(req: themeDto) {
+    try{
+      const eliminate = await this.themeModel.deleteOne({themeId: req.themeId});
+      if(eliminate) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Deleted Successfully",
+          data: eliminate,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
     }
   }
 }

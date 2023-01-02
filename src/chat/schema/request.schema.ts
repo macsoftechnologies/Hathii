@@ -7,11 +7,21 @@ export class Request extends Document{
     @Prop({default: uuid})
     requestId: string;
     @Prop()
-    request: string;
+    productId: string;
+    @Prop()
+    productName: string;
+    @Prop()
+    quantity: string;
     @Prop()
     providerId: string;
     @Prop()
     vendorId: string;
+    @Prop()
+    mailId: string;
+    @Prop()
+    request: string;
+    @Prop()
+    mobileNumber: string;
 }
 
 export const requestSchema = SchemaFactory.createForClass(Request);
