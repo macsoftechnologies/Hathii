@@ -32,6 +32,8 @@ export class vendor extends Document {
   @Prop()
   color:[];
   @Prop()
+  themeId: string;
+  @Prop()
   rating:string;
 }
 export const vendorSchema = SchemaFactory.createForClass(vendor);

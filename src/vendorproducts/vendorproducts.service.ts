@@ -70,6 +70,29 @@ export class VendorproductsService {
     }
   }
 
+  async getvendorproductbyid(req: vendorproductDto) {
+    try{
+      const getProduct = await this.vendorproductModel.findOne({vendorProdId: req.vendorProdId});
+      if(getProduct) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Here is the Product Details",
+          data: getProduct,
+        }
+      } else{
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: 'Invalid Request',
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
   async editvendProd(req: vendorproductDto) {
     try {
       const updateVend = await this.vendorproductModel.updateOne(
@@ -278,6 +301,7 @@ export class VendorproductsService {
           { price: new RegExp('.*' + req.price + '.*', 'i') },
           { discount: new RegExp('.*' + req.discount + '.*', 'i') },
           { shopType: new RegExp('.*' + req.shopType + '.*', 'i') },
+          { productName: new RegExp('.*' + req.productName + '.*', 'i') },
         ],
       });
       if (search) {

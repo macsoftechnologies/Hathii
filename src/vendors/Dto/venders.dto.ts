@@ -30,5 +30,7 @@ export class vendorDto {
   @ApiProperty()
   color:[]
   @ApiProperty()
+  themeId: string;
+  @ApiProperty()
   rating:string;
 }

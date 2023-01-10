@@ -58,6 +58,22 @@ export class VendorproductsController {
     }
   }
 
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: vendorproductDto
+  })
+  @Post('/getVendorProductById')
+  async getVendorProductById(@Body() req: vendorproductDto) {
+    try{
+      const getProduct = await this.vendorproductsService.getvendorproductbyid(req);
+      return getProduct
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
   
   @ApiTags('vendorproducts')
   @ApiBody({

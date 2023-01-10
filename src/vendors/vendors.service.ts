@@ -216,6 +216,7 @@ export class VendorsService {
             blogPost: req.blogPost,
             shopPhoto: req.shopPhoto,
             color: req.color,
+            themeId: req.themeId,
             rating: req.rating,
           },
         },
