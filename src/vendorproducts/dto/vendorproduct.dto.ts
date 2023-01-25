@@ -10,11 +10,17 @@ export class vendorproductDto{
     @ApiProperty()
     productName:string
     @ApiProperty()
+    productImage: []
+    @ApiProperty()
     price:string
     @ApiProperty()
     discount:string 
     @ApiProperty()
-    finalPrice:string 
+    finalPrice:string
+    @ApiProperty()
+    longitude: []
+    @ApiProperty()
+    latitude: []
     @ApiProperty()
     shopType:string
     @ApiProperty()
