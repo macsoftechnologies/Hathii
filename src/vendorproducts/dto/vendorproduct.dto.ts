@@ -16,7 +16,11 @@ export class vendorproductDto{
     @ApiProperty()
     discount:string 
     @ApiProperty()
-    finalPrice:string 
+    finalPrice:string
+    @ApiProperty()
+    longitude: []
+    @ApiProperty()
+    latitude: []
     @ApiProperty()
     shopType:string
     @ApiProperty()

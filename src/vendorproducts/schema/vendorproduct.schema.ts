@@ -24,6 +24,10 @@ export class vendorproduct extends Document{
     @Prop()
     finalPrice:string 
     @Prop()
+    longitude: []
+    @Prop()
+    latitude: []
+    @Prop()
     shopType:string
     @Prop()
     categoryId:string
