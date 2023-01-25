@@ -1,5 +1,8 @@
-import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
-import { ApiBody,  ApiPayloadTooLargeResponse,  ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, HttpStatus, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import { ApiBody,  ApiTags } from '@nestjs/swagger';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 import { inventoryManagementDto } from './dto/inventoryManangement.dto';
 import { vendorproductDto } from './dto/vendorproduct.dto';
 import { VendorproductsService } from './vendorproducts.service';
@@ -14,9 +17,23 @@ export class VendorproductsController {
     type:vendorproductDto
   })
   @Post('/createVendorProduct')
-  async createProd(@Body() req:vendorproductDto){
+  @UseInterceptors(
+    AnyFilesInterceptor({
+      storage: diskStorage({
+        destination: './files',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async createProd(@Body() req:vendorproductDto, @UploadedFiles() image){
     try{
-      const res=await this.vendorproductsService.vendorprodcreate(req)
+      const res=await this.vendorproductsService.vendorprodcreate(req, image)
       return res
     }catch(error){
       return{
@@ -80,9 +97,23 @@ export class VendorproductsController {
     type:vendorproductDto
   })
   @Post('/updatevendorProduct')
-  async editVen(@Body() req:vendorproductDto){
+  @UseInterceptors(
+    AnyFilesInterceptor({
+      storage: diskStorage({
+        destination: './files',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+    }),
+  )
+  async editVen(@Body() req:vendorproductDto, @UploadedFiles() image){
     try{
-      const result=await this.vendorproductsService.editvendProd(req)
+      const result=await this.vendorproductsService.editvendProd(req, image)
       return result
     }catch(error){
       return{

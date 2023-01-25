@@ -10,6 +10,8 @@ export class vendorproductDto{
     @ApiProperty()
     productName:string
     @ApiProperty()
+    productImage: []
+    @ApiProperty()
     price:string
     @ApiProperty()
     discount:string 

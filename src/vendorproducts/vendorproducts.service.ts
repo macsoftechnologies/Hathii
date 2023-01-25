@@ -15,8 +15,23 @@ export class VendorproductsService {
     private inventoryManagenmentModel: Model<inventoryManagement>,
   ) {}
 
-  async vendorprodcreate(req: vendorproductDto) {
+  async vendorprodcreate(req: vendorproductDto, image) {
     try {
+
+      console.log(req, 'documents...', image);
+      if (image) {
+        const reqDoc = image.map((doc, index) => {
+          let IsPrimary = false;
+          if (index == 0) {
+            IsPrimary = true;
+          }
+          const randomNumber = Math.floor(Math.random() * 1000000 + 1);
+          return doc.filename;
+        });
+
+        req.productImage = reqDoc;
+      }
+
       const vendorProres = await this.vendorproductModel.create(req);
       if (vendorProres) {
         return {
@@ -93,14 +108,36 @@ export class VendorproductsService {
     }
   }
 
-  async editvendProd(req: vendorproductDto) {
+  async editvendProd(req: vendorproductDto, image) {
     try {
+
+      console.log(req, 'documents...', image);
+      if (image) {
+        const reqDoc = image.map((doc, index) => {
+          let IsPrimary = false;
+          if (index == 0) {
+            IsPrimary = true;
+          }
+          const randomNumber = Math.floor(Math.random() * 1000000 + 1);
+          return doc.filename;
+        });
+
+        req.productImage = reqDoc;
+      }
+
+      const imagesCount = await this.vendorproductModel.findOne({
+        $and: [{ vendorId: req.vendorId }, { vendorProdId: req.vendorProdId }],
+      });
+
+      if (!imagesCount.productImage || imagesCount.productImage.length === 0) {
+        console.log('.........................if');
       const updateVend = await this.vendorproductModel.updateOne(
-        { vendorProdId: req.vendorProdId },
+        { $and: [{ vendorId: req.vendorId }, { vendorProdId: req.vendorProdId }] },
         {
           $set: {
             vendorName: req.vendorName,
             productName: req.productName,
+            productImage: req.productImage,
             price: req.price,
             discount: req.discount,
             finalPrice: req.finalPrice,
@@ -118,6 +155,46 @@ export class VendorproductsService {
           vendupdateRes: updateVend,
         };
       }
+    } else {
+      console.log('.........................if');
+      const updateVend = await this.vendorproductModel.updateOne(
+        { $and: [{ vendorId: req.vendorId }, { vendorProdId: req.vendorProdId }] },
+        {
+          $set: {
+            vendorName: req.vendorName,
+            productName: req.productName,
+            // productImage: req.productImage,
+            price: req.price,
+            discount: req.discount,
+            finalPrice: req.finalPrice,
+            shopType: req.shopType,
+            specifications: req.productDetails,
+            policy: req.policy,
+            description: req.description,
+          },
+        },
+      );
+      const imagesQuery = await this.vendorproductModel.updateMany(
+        { $and: [{ vendorId: req.vendorId }, { vendorProdId: req.vendorProdId }] },
+        {
+          $push: { productImage: { $each: req.productImage } },
+        },
+      );
+
+      console.log(imagesQuery, 'imagesQuery');
+      console.log(req.productImage, 'productImage............');
+      if (updateVend) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Updated Successfully',
+          data: updateVend,
+        };
+      }
+    }
+    return {
+      statusCode: HttpStatus.BAD_REQUEST,
+      msg: 'Invalid Request',
+    };
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

@@ -16,6 +16,8 @@ export class vendorproduct extends Document{
     @Prop()
     productName:string
     @Prop()
+    productImage: []
+    @Prop()
     price:string
     @Prop()
     discount:string 
