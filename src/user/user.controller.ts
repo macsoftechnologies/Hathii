@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Post, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, HttpStatus, Param, Post, Put, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
  
 import {  loginDto, userDto,   } from './dto/user.dto';
@@ -93,4 +93,16 @@ export class UserController {
   }
 
  
+  @Put('/deletUser')
+  async deleteUser(@Param('id') id:string){
+    try{
+      const result=await this.userService.deleteuser(id)
+      return result
+    }catch(error){
+      return {
+        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+        message:error 
+      }
+    }
+  }
 }

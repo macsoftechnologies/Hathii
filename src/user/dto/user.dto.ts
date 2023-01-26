@@ -32,6 +32,12 @@ export class loginDto{
  
 export class userDto  {
     @ApiProperty()
+    providerId:string
+    @ApiProperty()
+    userId:string
+    @ApiProperty()
+    vendorId:string
+    @ApiProperty()
     userName:string
     @ApiProperty()
     name:string

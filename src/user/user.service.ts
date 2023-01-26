@@ -1,7 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { AuthService } from 'src/auth/auth.service';
 import { SharedService } from 'src/shared/shared.service';
 import {   loginDto , userDto} from './dto/user.dto';
 import { user } from './dto/user.schema';
@@ -12,7 +11,7 @@ import { user } from './dto/user.schema';
 export class UserService {
    
     constructor(@InjectModel(user.name) private UserModel:Model<user>,
-     private authService:AuthService,private sharedService:SharedService){}
+     private sharedService:SharedService){}
 
   async create(params:userDto,image?:any):Promise<any>{
       try{
@@ -49,6 +48,7 @@ export class UserService {
 
         let userObject:any={};
         if(params.role==='serviceprovider'){
+          userObject.providerId=params.providerId,
            userObject.name=params.name,
            userObject.email=params.email,
            userObject.mobileNumber=params.mobileNumber,
@@ -57,21 +57,33 @@ export class UserService {
            userObject.location=params.location,
            userObject.skills=params.skills,
            userObject.aadharNumber=params.aadharNumber,
-           userObject.labourcard=params.labourcard
-           
+           userObject.labourcard=params.labourcard,
+           userObject.providerId=params.providerId,
+           userObject.rating=params.rating,
+           userObject.themeId=params.themeId
         }
         if(params.role==='vendor'){
-            userObject.vendorName=params.vendorName;
-            userObject.shopName=params.shopName;
-            userObject. modeOfBussiness=params.modeOfBussiness;
-            userObject.Gstin=params.Gstin;
-            userObject.shopProof=params.shopProof;
-            userObject.color=params.color;
-            userObject.shopPhoto=params.shopPhoto;
-            userObject.blogPost=params.blogPost;
+          userObject.vendorId=params.vendorId,
+            userObject.vendorName=params.vendorName,
+            userObject.shopName=params.shopName,
+            userObject. modeOfBussiness=params.modeOfBussiness,
+            userObject.Gstin=params.Gstin,
+            userObject.shopProof=params.shopProof,
+            userObject.color=params.color,
+            userObject.shopPhoto=params.shopPhoto,
+            userObject.blogPost=params.blogPost,
+            userObject.mobileNumber=params.mobileNumber,
+            userObject.email=params.email,
+            userObject.password=params.password,
+            userObject.shopTimings=params.shopTimings,
+            userObject.addLocation=params.addLocation,
+            userObject.themeId=params.themeId,
+            userObject.rating=params.rating
+
          }
 
         if(params.role==='service'){
+          userObject.serviceId=params.userId,
             userObject.userName=params.userName,
             userObject.name=params.name,
             userObject.mobileNumber=params.mobileNumber,
@@ -81,6 +93,7 @@ export class UserService {
             userObject.experience=params. experience
         }
         if(params.role==='user'){
+          userObject.userId=params.userId,
             userObject.firstName=params.firstName,
             userObject.lastName=params.lastName,
             userObject.email=params.email,
@@ -153,4 +166,22 @@ export class UserService {
         }
      }   
 
+
+     async deleteuser(id:string ){
+      try{
+        const delUser=await this.UserModel.deleteOne({_id:id})
+        if(delUser){
+          return{
+            statusCode:HttpStatus.OK,
+            message:'deleted sucessfully',
+            del:delUser
+          }
+        }
+      }catch(error){
+        return {
+          statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+          message:error
+        }
+      }
+     }
 }

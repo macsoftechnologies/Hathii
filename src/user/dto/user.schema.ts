@@ -1,9 +1,13 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document } from "mongoose";
+import {  v4 as uuid } from "uuid";
 
 @Schema({timestamps:true})
 export class user extends Document{
+
    //services
+   @Prop({default:uuid})
+   serviceId:string
    @Prop()
    userName:string
     @Prop()
@@ -19,7 +23,8 @@ export class user extends Document{
     @Prop()
     experience:string
     //serviceProvider  
-   
+   @Prop({default:uuid})
+   providerId:string
     @Prop()
     minwageRating:string
     @Prop()
@@ -33,6 +38,8 @@ export class user extends Document{
     @Prop()
     themeId: string
     //users 
+    @Prop({default:uuid})
+    userId:string
     @Prop()
     firstName: string
     @Prop()
@@ -46,6 +53,9 @@ export class user extends Document{
     address: string
     
      //vendorSchema
+     @Prop({default:uuid})
+     vendorId:string;
+
   @Prop()
   vendorName:string;
    @Prop()
