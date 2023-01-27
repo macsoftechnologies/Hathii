@@ -38,7 +38,7 @@ export class user extends Document{
     @Prop()
     themeId: string
     //users 
-    @Prop({default:uuid})
+    @Prop({default:uuid,required:false})
     userId:string
     @Prop()
     firstName: string
@@ -53,7 +53,7 @@ export class user extends Document{
     address: string
     
      //vendorSchema
-     @Prop({default:uuid})
+     @Prop({default:uuid,required:false})
      vendorId:string;
 
   @Prop()
@@ -61,9 +61,9 @@ export class user extends Document{
    @Prop()
   shopName:string;
   @Prop()
-  shopTimings: [];
+  shopTimings:string;
   @Prop()
-  addLocation: [];
+  addLocation:string;
   @Prop()
   modeOfBussiness: string;
   @Prop()
@@ -71,11 +71,11 @@ export class user extends Document{
   @Prop()
   shopProof:string;
   @Prop()
-  blogPost: [];
+  blogPost:string;
   @Prop()
-  shopPhoto: [];
+  shopPhoto:string;
   @Prop()
-  color:[];
+  color:string;
   @Prop({enum:['service','user','vendor','serviceprovider','admin']})
   role:string
   @Prop({ default: 'active', enum: ['active', 'suspend'] })

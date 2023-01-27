@@ -1,7 +1,7 @@
-import { Body, Controller, HttpStatus, Param, Post, Put, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, HttpStatus, Param, Post, Put, Res, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
  
-import {  loginDto, userDto,   } from './dto/user.dto';
+import {  loginDto,  userDto } from './dto/user.dto';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -26,12 +26,31 @@ export class UserController {
     }
   }
 
-  
+  @UseInterceptors(
+    FileFieldsInterceptor([  { name: 'labourcard' } ]),
+  )
   @Post('/createServiceProvider')
-  async createServices(@Body() body:userDto){
+  async createServiceProv(@Body() body:userDto,@UploadedFiles() image){
     try{
       const response =await this.userService.create({
         role:'serviceprovider',
+        ...body
+      },image)
+      return response
+    }catch(error){
+      return {
+        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+        message:error 
+      }
+    }
+  }
+
+  @Post('/createService')
+  async createServ(@Body() body:userDto){
+    try{
+      
+      const response =await this.userService.create({
+        role:'service',
         ...body
       })
       return response
@@ -79,25 +98,26 @@ export class UserController {
 
   
   
-  @Post('/createLogin')
-  async Login(@Body() body:loginDto):Promise<any>{
-    try{
-      const users=await this.userService.login(body)
-   
-    }catch(error){
-      return{
-        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-        message:error 
+  @Post('/login')
+  async login(@Body() req: userDto){
+      try{
+        const result = await this.userService.loginUser(req)
+        return result
+      } catch(error){
+        return{
+          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+          message: error.message
+        };
       }
     }
-  }
 
  
-  @Put('/deletUser')
+  @Delete('/deletUser/:id')
   async deleteUser(@Param('id') id:string){
     try{
       const result=await this.userService.deleteuser(id)
       return result
+      console.log(result)
     }catch(error){
       return {
         statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
@@ -105,4 +125,6 @@ export class UserController {
       }
     }
   }
+
+  
 }

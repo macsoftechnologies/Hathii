@@ -2,13 +2,14 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SharedService } from 'src/shared/shared.service';
-import {   loginDto , userDto} from './dto/user.dto';
+import {   loginDto , userDto } from './dto/user.dto';
 import { user } from './dto/user.schema';
  
 
 
 @Injectable()
 export class UserService {
+ 
    
     constructor(@InjectModel(user.name) private UserModel:Model<user>,
      private sharedService:SharedService){}
@@ -40,7 +41,7 @@ export class UserService {
                 const attachmentFile = await this.sharedService.saveFile(
                   image.labourcard[0],
                 );
-                params.color = attachmentFile;
+                params.labourcard= attachmentFile;
               }
           }
 
@@ -49,6 +50,7 @@ export class UserService {
         let userObject:any={};
         if(params.role==='serviceprovider'){
           userObject.providerId=params.providerId,
+          userObject.userName=params.userName,
            userObject.name=params.name,
            userObject.email=params.email,
            userObject.mobileNumber=params.mobileNumber,
@@ -58,15 +60,16 @@ export class UserService {
            userObject.skills=params.skills,
            userObject.aadharNumber=params.aadharNumber,
            userObject.labourcard=params.labourcard,
-           userObject.providerId=params.providerId,
            userObject.rating=params.rating,
-           userObject.themeId=params.themeId
+           userObject.themeId=params.themeId,
+           userObject.password=params.password
         }
         if(params.role==='vendor'){
           userObject.vendorId=params.vendorId,
+          userObject.userName=params.userName,
             userObject.vendorName=params.vendorName,
             userObject.shopName=params.shopName,
-            userObject. modeOfBussiness=params.modeOfBussiness,
+            userObject.modeOfBussiness=params.modeOfBussiness,
             userObject.Gstin=params.Gstin,
             userObject.shopProof=params.shopProof,
             userObject.color=params.color,
@@ -90,10 +93,12 @@ export class UserService {
             userObject.email=params.email,
             userObject.rating=params.rating,
             userObject.qualification=params.qualification,
-            userObject.experience=params. experience
+            userObject.experience=params. experience,
+            userObject.password=params.password
         }
         if(params.role==='user'){
           userObject.userId=params.userId,
+            userObject.userName=params.userName,
             userObject.firstName=params.firstName,
             userObject.lastName=params.lastName,
             userObject.email=params.email,
@@ -110,6 +115,7 @@ export class UserService {
 
             }
             console.log("filterObjet",filterObject)
+            console.log("service",filterObject)
             createUserRes=await this.UserModel.create(filterObject);
           }else{
                createUserRes=await this.UserModel.create(params)
@@ -135,37 +141,35 @@ export class UserService {
 
    
 
-
-    async login(req: loginDto){
-        try {
-            const loginRes = await this.UserModel.findOne({ $or: [{email: req.email}, { password: req.password},{userName:req.userName}]}).lean()
-           if(loginRes){
-            if(loginRes.password === req.password){
-                return {
-                    
-                    statusCode: HttpStatus.OK,
-                    message:"Login SuccessFull",
-                    login: loginRes
-                      }
-            }
-         return{
-            statusCode: HttpStatus.UNAUTHORIZED,
-            message: "Invalid Password"
+  async loginUser(req: userDto){
+    try {
+        const loginRes = await this.UserModel.findOne({ $or: [{userName: req.userName}, { password: req.password}]}).lean()
+       if(loginRes){
+        if(loginRes.password === req.password){
+            return {
+                
+                statusCode: HttpStatus.OK,
+                message:"Login SuccessFull",
+                login: loginRes
+                  }
         }
-     }
-    
-      return{
-      statusCode: HttpStatus.UNAUTHORIZED,
-      message: "user not found"
-     }
-        } catch(error){
-            return{
-                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-                message: error.message
-            }
-        }
-     }   
+     return{
+        statusCode: HttpStatus.UNAUTHORIZED,
+        message: "Invalid Password"
+    }
+ }
 
+  return{
+  statusCode: HttpStatus.UNAUTHORIZED,
+  message: "user  not found"
+ }
+    } catch(error){
+        return{
+            statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+            message: error.message
+        }
+    }
+ }   
 
      async deleteuser(id:string ){
       try{
@@ -184,4 +188,9 @@ export class UserService {
         }
       }
      }
-}
+
+     
+  }
+
+  
+    

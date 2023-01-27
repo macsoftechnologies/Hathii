@@ -1,5 +1,5 @@
 import { ApiProperty, IntersectionType } from "@nestjs/swagger"
-import { IsEnum } from "class-validator"
+import { IsEnum, IsOptional } from "class-validator"
 
 enum role {
     'admin'='admin',
@@ -94,13 +94,18 @@ export class userDto  {
   @ApiProperty()
   shopProof:string;
   @ApiProperty()
+  @IsOptional()
   blogPost: [];
   @ApiProperty()
+  @IsOptional()
   shopPhoto: [];
   @ApiProperty()
+  @IsOptional()
   color:[];
   @ApiProperty()
   @IsEnum(role)
   role: string
 }
+  
  
+   
