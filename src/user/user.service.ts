@@ -144,16 +144,19 @@ export class UserService {
 
   async loginUser(req: userDto){
     try {
-        const loginRes = await this.UserModel.findOne({ $or: [{userName: req.userName}, { password: req.password}]}).lean()
+       // const loginRes = await this.UserModel.findOne({ $or: [{userName: req.userName}, { password: req.password}]}).lean()
+       const loginRes=await this.UserModel.findOne({mobileNumber:req.mobileNumber,role:req.role})
        if(loginRes){
-        if(loginRes.password === req.password){
-            return {
+       // if(loginRes.password === req.password){
+          
+          return {
                 
                 statusCode: HttpStatus.OK,
                 message:"Login SuccessFull",
-                login: loginRes
+                login: loginRes,
+                
                   }
-        }
+      
      return{
         statusCode: HttpStatus.UNAUTHORIZED,
         message: "Invalid Password"
