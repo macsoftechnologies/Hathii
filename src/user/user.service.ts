@@ -110,6 +110,7 @@ export class UserService {
         let createUserRes;
         if(params.role==='service' || params.role==='user' || params.role==='serviceprovider' ||  params.role==='vendor'){
             let filterObject:any={
+              role:params.role,
                  ...userObject
 
 
