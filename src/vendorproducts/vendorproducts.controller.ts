@@ -1,9 +1,11 @@
-import { Body, Controller, Get, HttpStatus, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ApiBody,  ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { userDto } from 'src/user/dto/user.dto';
 import { inventoryManagementDto } from './dto/inventoryManangement.dto';
+import { productRequestDto } from './dto/productRequest.dto';
 import { vendorproductDto } from './dto/vendorproduct.dto';
 import { VendorproductsService } from './vendorproducts.service';
 
@@ -54,6 +56,20 @@ export class VendorproductsController {
       return{
         statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
         Message:error
+      }
+    }
+  }
+
+  @ApiTags('/vendorproducts')
+  @Post('/vendorproductsOfVendor')
+  async vendorproductsOfVendor(@Body() req: userDto) {
+    try {
+    const getproducts = await this.vendorproductsService.getvendorproductsofVendor(req);
+    return getproducts
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
       }
     }
   }
@@ -243,4 +259,83 @@ export class VendorproductsController {
       }
     }
   }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: productRequestDto
+  })
+  @Post('/createProductRequest')
+  async sendProductRequest(@Body() req: productRequestDto) {
+    try{
+      const sendRequest = await this.vendorproductsService.sendproductRequest(req);
+      return sendRequest
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @Get('/getProductRequests')
+  async getProductRequests() {
+    try{
+      const sendRequest = await this.vendorproductsService.getproductRequest();
+      return sendRequest
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @Get('/getProductRequest/:productRequestId')
+  async getProductRequestById(@Param('productRequestId') productRequestId: string) {
+    try{
+      const getRequest = await this.vendorproductsService.getProdRequestById(productRequestId);
+      return getRequest
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: userDto
+  })
+  @Post('/productrequestsofuser')
+  async productrequestsOfUser(@Body() req: userDto) {
+    try{
+      const prodRequest = await this.vendorproductsService.productRequestsofUser(req);
+      return prodRequest
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  // @ApiTags('vendorproducts')
+  // @ApiBody({
+  //   type: userDto
+  // })
+  // @Post('/acceptedproductrequests')
+  // async acceptedproductrequests(@Body() req: userDto) {
+  //   try{
+  //     const acceptrequests = await this.vendorproductsService.acceptedRequestsOfVendor(req);
+  //     return acceptrequests
+  //   } catch(error) {
+  //     return {
+  //       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+  //       msg: error,
+  //     }
+  //   }
+  // }
 }

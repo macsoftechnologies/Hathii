@@ -1,9 +1,13 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { userDto } from 'src/user/dto/user.dto';
+import { user } from 'src/user/dto/user.schema';
 import { inventoryManagementDto } from './dto/inventoryManangement.dto';
+import { productRequestDto } from './dto/productRequest.dto';
 import { vendorproductDto } from './dto/vendorproduct.dto';
 import { inventoryManagement } from './schema/inventoryManagemement.schema';
+import { ProductRequest } from './schema/productRequest.schema';
 import { vendorproduct } from './schema/vendorproduct.schema';
 
 @Injectable()
@@ -13,6 +17,8 @@ export class VendorproductsService {
     private vendorproductModel: Model<vendorproduct>,
     @InjectModel(inventoryManagement.name)
     private inventoryManagenmentModel: Model<inventoryManagement>,
+    @InjectModel(ProductRequest.name) private productRequest: Model<ProductRequest>,
+    @InjectModel(user.name) private userModel: Model<user>
   ) {}
 
   async vendorprodcreate(req: vendorproductDto, image) {
@@ -62,6 +68,55 @@ export class VendorproductsService {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         Message: error,
       };
+    }
+  }
+
+  async getvendorproductsofVendor(req: userDto) {
+    try{
+      const vendor = await this.userModel.findOne({vendorId: req.vendorId});
+      if(vendor) {
+        const vendorproducts = await this.vendorproductModel.aggregate([
+          {$match: {vendorId: vendor.vendorId}},
+          {
+            $lookup: {
+              from: "vendorproducts",
+              localField: "vendorId",
+              foreignField: "vendorId",
+              as: "vendorproducts",
+            }
+          }
+        ]);
+        const count = await this.vendorproductModel.aggregate([
+          {$match: {vendorId: vendor.vendorId}},
+          {
+            $lookup: {
+              from: "vendorproducts",
+              localField: "vendorId",
+              foreignField: "vendorId",
+              as: "vendorproducts",
+            }
+          },
+          {
+            $count: "count"
+          }
+        ]);
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "vendorproducts of a vendor",
+          data: vendorproducts,
+          count: count,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
     }
   }
 
@@ -458,4 +513,167 @@ export class VendorproductsService {
       }
     }
   }
+
+  async sendproductRequest(req: productRequestDto) {
+    try{
+      const requestSend = await this.productRequest.create(req);
+      if(requestSend){
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "ProductRequest send",
+          data: requestSend,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  async getproductRequest() {
+    try{
+      const getList = await this.productRequest.find();
+      if(getList) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "List of productRequests",
+          data: getList,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  async getProdRequestById(productRequestId: string) {
+    try{
+      const getProduct = await this.productRequest.findOne({productRequestId});
+      if(getProduct) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Productrequest Details",
+          data: getProduct,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  async productRequestsofUser(req: userDto) {
+    try{
+      const vendor = await this.userModel.findOne({$or:[{vendorId: req.vendorId},{userId: req.userId}]});
+      if(vendor) {
+        const vendorproducts = await this.userModel.aggregate([
+          {$match: {$or: [{vendorId: vendor.vendorId},{userId: vendor.userId}]}},
+          {
+            $lookup: {
+              from: "productrequests",
+              localField: "vendorId",
+              foreignField: "vendorId",
+              as: "vendorProductrequests",
+            }
+          },
+          {
+            $lookup:{
+              from: "productrequests",
+              localField: "userId",
+              foreignField: "userId",
+              as: "userProductRequests"
+            }
+          }
+        ]);
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "productrequests of a vendor",
+          data: vendorproducts,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  // async acceptedRequestsOfVendor(req: userDto) {
+  //   try{
+  //     const requests = await this.userModel.findOne({$or:[{vendorId: req.vendorId},{userId: req.userId}]});
+  //     if(requests) {
+  //       const vendorrequests = await this.userModel.aggregate([
+  //         {$match: {$or: [{vendorId: requests.vendorId},{userId: requests.userId}]}},
+  //         {
+  //           $lookup: {
+  //             from: "productrequests",
+  //             localField: "vendorId",
+  //             foreignField: "vendorId",
+  //             as: "productsrequests",
+  //           }
+  //         },
+  //         {
+  //           $lookup: {
+  //             from: "productrequests",
+  //             localField: "userId",
+  //             foreignField: "userId",
+  //             as: "productsrequests",
+  //         }
+  //       },
+  //       {
+  //         $unwind: "productrequests"
+  //       },
+  //       {
+  //         $match: {'productrequests.status':'accepted'}
+  //       },
+  //       { $group : {
+  //         productrequests : {$push : "productrequests"}
+  // }}
+  //       ]);
+  //       return {
+  //         statusCode: HttpStatus.OK,
+  //         msg: "Accepted product requests of user",
+  //         data: vendorrequests,
+  //       }
+  //     } else {
+  //       return {
+  //         statusCode: HttpStatus.BAD_REQUEST,
+  //         msg: "Invalid Request",
+  //       }
+  //     }
+  //   } catch(error) {
+  //     return {
+  //       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+  //       msg: error
+  //     }
+  //   }
+  // }
+
 }
