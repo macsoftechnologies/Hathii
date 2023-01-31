@@ -73,9 +73,15 @@ export class VendorproductsService {
 
   async getvendorproductsofVendor(req: userDto) {
     try{
-      const vendor = await this.userModel.findOne({vendorId: req.vendorId});
+      const vendor = await this.userModel.findOne({
+        $or: [
+          {vendorId: req.vendorId},
+          {userId: req.userId},
+          {providerId: req.providerId}
+        ]
+      });
       if(vendor) {
-        const vendorproducts = await this.vendorproductModel.aggregate([
+        const vendorproducts = await this.userModel.aggregate([
           {$match: {vendorId: vendor.vendorId}},
           {
             $lookup: {
