@@ -322,20 +322,20 @@ export class VendorproductsController {
     }
   }
 
-  // @ApiTags('vendorproducts')
-  // @ApiBody({
-  //   type: userDto
-  // })
-  // @Post('/acceptedproductrequests')
-  // async acceptedproductrequests(@Body() req: userDto) {
-  //   try{
-  //     const acceptrequests = await this.vendorproductsService.acceptedRequestsOfVendor(req);
-  //     return acceptrequests
-  //   } catch(error) {
-  //     return {
-  //       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-  //       msg: error,
-  //     }
-  //   }
-  // }
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: userDto
+  })
+  @Post('/acceptedproductrequests')
+  async acceptedproductrequests(@Body() req: userDto) {
+    try{
+      const acceptrequests = await this.vendorproductsService.acceptedRequestsOfVendor(req);
+      return acceptrequests
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
 }

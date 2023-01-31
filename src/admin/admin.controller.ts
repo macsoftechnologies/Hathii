@@ -6,6 +6,7 @@ import { extname } from 'path';
 import { AdminService } from './admin.service';
 import { adminDto } from './Dto/admin.dto';
 import { adminproductDto } from './Dto/adminproduct.dto';
+import { appliedThemesDto } from './Dto/appliedThemes.dto';
 import { complaintDto } from './Dto/complaints.dto';
 import { contactDto } from './Dto/contact.dto';
 import { couponDto } from './Dto/coupon.dto';
@@ -704,6 +705,88 @@ async login(@Body() req: adminDto){
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type: appliedThemesDto
+  })
+  @Post('/addAppliedTheme')
+  async addAppliedTheme(@Body() req: appliedThemesDto) {
+    try{
+      const addtheme = await this.adminService.addappliedTheme(req);
+      return addtheme
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @Get('/getAppliedTheme')
+  async getAppliedTheme() {
+    try{
+      const getthemes = await this.adminService.getappliedTheme();
+      return getthemes
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type: appliedThemesDto
+  })
+  @Post('/getAppliedThemeById')
+  async getAppliedThemeById(@Body() req: appliedThemesDto) {
+    try{
+      const gettheme = await this.adminService.getappliedThemeById(req);
+      return gettheme
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type: appliedThemesDto
+  })
+  @Post('/updateAppliedThemeById')
+  async updateAppliedThemeById(@Body() req: appliedThemesDto) {
+    try{
+      const updatetheme = await this.adminService.updateappliedThemeById(req);
+      return updatetheme
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type: appliedThemesDto
+  })
+  @Post('/deleteAppliedThemeById')
+  async deleteAppliedThemeById(@Body() req: appliedThemesDto) {
+    try{
+      const deletetheme = await this.adminService.deleteappliedThemeById(req);
+      return deletetheme
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
       }
     }
   }

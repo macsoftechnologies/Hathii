@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { SharedService } from 'src/shared/shared.service';
 import { adminDto } from './Dto/admin.dto';
 import { adminproductDto } from './Dto/adminproduct.dto';
+import { appliedThemesDto } from './Dto/appliedThemes.dto';
 import { complaintDto } from './Dto/complaints.dto';
 import { contactDto } from './Dto/contact.dto';
 import { couponDto } from './Dto/coupon.dto';
@@ -13,6 +14,7 @@ import { rewardpointDto } from './Dto/rewardpoint.dto';
 import { themeDto } from './Dto/theme.dto';
 import { admin } from './Schema/admin.schema';
 import { adminproduct } from './Schema/adminproduct.schema';
+import { appliedTheme } from './Schema/appliedThemes.schema';
 import { complaint } from './Schema/complaints.schema';
 import { contact } from './Schema/contact.schema';
 import { Coupon } from './Schema/coupon.schema';
@@ -36,6 +38,7 @@ export class AdminService {
     private notificationModel: Model<Notification>,
     @InjectModel(Coupon.name) private couponModel: Model<Coupon>,
     @InjectModel(Theme.name) private themeModel: Model<Theme>,
+    @InjectModel(appliedTheme.name) private appliedThemeModel: Model<Theme>
   ) {}
 
   async Create(req: adminDto) {
@@ -1022,6 +1025,125 @@ export class AdminService {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
+      }
+    }
+  }
+
+  async addappliedTheme(req: appliedThemesDto) {
+    try{
+      const addappliedtheme = await this.appliedThemeModel.create(req);
+      if(addappliedtheme) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Theme applied",
+          data: addappliedtheme,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  async getappliedTheme() {
+    try{
+      const getappliedtheme = await this.appliedThemeModel.find();
+      if(getappliedtheme) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "List of applied themes",
+          data: getappliedtheme,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  async getappliedThemeById(req: appliedThemesDto) {
+    try{
+      const getappliedtheme = await this.appliedThemeModel.findOne({appliedThemeId: req.appliedThemeId});
+      if(getappliedtheme) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Applied theme",
+          data: getappliedtheme,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  async updateappliedThemeById(req: appliedThemesDto) {
+    try{
+      const updateappliedtheme = await this.appliedThemeModel.updateOne({appliedThemeId: req.appliedThemeId},
+        {$set: {
+          userId: req.userId,
+          vendorId: req.vendorId,
+        }});
+      if(updateappliedtheme) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Applied theme",
+          data: updateappliedtheme,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  async deleteappliedThemeById(req: appliedThemesDto) {
+    try{
+      const deleteappliedtheme = await this.appliedThemeModel.deleteOne({appliedThemeId: req.appliedThemeId});
+      if(deleteappliedtheme) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Applied theme",
+          data: deleteappliedtheme,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
       }
     }
   }

@@ -12,6 +12,7 @@ import { SharedService } from 'src/shared/shared.service';
 import { Notification, notificationSchema } from './Schema/notifications.schema';
 import { Coupon, couponSchema } from './Schema/coupon.schema';
 import { Theme, themeSchema } from './Schema/theme.schema';
+import { appliedTheme, appliedThemeSchema } from './Schema/appliedThemes.schema';
 
 @Module({
   imports:[MongooseModule.forFeature([{name:admin.name ,schema:adminSchema},
@@ -22,7 +23,9 @@ import { Theme, themeSchema } from './Schema/theme.schema';
   {name:rewardpoint.name,schema:rewardpointSchema},
   {name:Notification.name,schema:notificationSchema},
   {name:Coupon.name,schema:couponSchema},
-  {name:Theme.name,schema:themeSchema}])],
+  {name:Theme.name,schema:themeSchema},
+  {name:appliedTheme.name,schema:appliedThemeSchema}
+])],
   controllers: [AdminController],
   providers: [AdminService, SharedService]
 })
