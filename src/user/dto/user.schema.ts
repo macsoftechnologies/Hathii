@@ -76,8 +76,9 @@ export class user extends Document{
   shopPhoto:string;
   @Prop()
   color:string;
-  @Prop({enum:['service','user','vendor','serviceprovider','admin']})
+  @Prop({ enum:['service','user','vendor','serviceprovider','admin']})
   role:string
+ 
   @Prop({ default: 'active', enum: ['active', 'suspend'] })
   status:string
 }

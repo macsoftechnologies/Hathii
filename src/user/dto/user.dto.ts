@@ -95,16 +95,17 @@ export class userDto  {
   shopProof:string;
   @ApiProperty()
   @IsOptional()
-  blogPost: [];
+  blogPost:string;
   @ApiProperty()
   @IsOptional()
-  shopPhoto: [];
+  shopPhoto:string;
   @ApiProperty()
   @IsOptional()
   color:[];
   @ApiProperty()
   @IsEnum(role)
   role: string
+  
 }
   
  

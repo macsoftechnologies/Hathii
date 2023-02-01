@@ -19,6 +19,7 @@ export class SharedService {
   async saveFile(file: any): Promise<any> {
     try {
       let fileName = file.originalname;
+      console.log(file)
       fileName = fileName.replace(/\//g, '-');
       fileName = fileName.replace(/ /g, '_');
       fileName = fileName.replace(/[()]/g, '');
