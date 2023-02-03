@@ -1,28 +1,30 @@
-import { ApiProperty } from "@nestjs/swagger"
+import { ApiProperty } from '@nestjs/swagger';
 
 enum status {
-    'received'='received',
-    'accepted' = 'accepted',
-    'completed'='completed'
+  'received' = 'received',
+  'accepted' = 'accepted',
+  'completed' = 'completed',
 }
- 
-export class orderDto{
-    @ApiProperty()
-    orderId:string
-    @ApiProperty()
-    userId:string
-    @ApiProperty()
-    orderQuantity:string
-    @ApiProperty()
-    time:string
-    @ApiProperty()
-    rewardpoints:string
-    @ApiProperty()
-    date:string
-    @ApiProperty()
-    vendorProductId: string
-    @ApiProperty()
-    vendorId: string
-    @ApiProperty()
-    status: string
+
+export class orderDto {
+  @ApiProperty()
+  orderId: string;
+  @ApiProperty()
+  userId: string;
+  @ApiProperty()
+  orderQuantity: string;
+  @ApiProperty()
+  time: string;
+  @ApiProperty()
+  rewardpoints: string;
+  @ApiProperty()
+  date: string;
+  @ApiProperty()
+  vendorProductId: string;
+  @ApiProperty()
+  vendorId: string;
+  @ApiProperty()
+  status: string;
+  @ApiProperty()
+  createdAt: string;
 }
