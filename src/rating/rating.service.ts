@@ -20,16 +20,62 @@ export class RatingService {
     try {
       const rate = await this.ratingModel.create(req);
       if (rate) {
+        rate.averageRating = (req.vendorVerficationRating + req.overallRating + req.responseRate)/3;
+        const updating = await this.ratingModel.updateOne({userId: rate.userId},{
+          $set: {
+            ratingId: rate.ratingId,
+            userId: rate.userId,
+            responseRate: rate.responseRate,
+            rating: rate.rating,
+            trustRating: rate.trustRating,
+            vendorVerficationRating: rate.vendorVerficationRating,
+            overallRating: rate.overallRating,
+            vendorId: rate.vendorId,
+            vendorProductId: rate.vendorProductId,
+            averageRating: (rate.responseRate + rate.vendorVerficationRating + rate.overallRating)/3
+          }
+        });
         return {
           statusCode: HttpStatus.OK,
           res: rate,
         };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
       }
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         Message: error,
       };
+    }
+  }
+
+  async vendorOverallRating(req: ratingDto) {
+    try{
+      const vendorRating = await this.ratingModel.find({vendorId: req.vendorId});
+      if(vendorRating) {
+        const count = await this.ratingModel.find({vendorId: req.vendorId}).count();
+        let sum = vendorRating.reduce((a, b) => a + b.averageRating, 0);
+        const avg = sum/count;
+        return{
+          statusCode: HttpStatus.OK,
+          msg: "OverAll Rating of the vendor",
+          averageRatingofVendor: avg,
+        }
+      } else{
+        return{
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
     }
   }
 
@@ -44,6 +90,11 @@ export class RatingService {
             res,
           },
         };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
       }
     } catch (error) {
       return {
@@ -66,6 +117,11 @@ export class RatingService {
             delrate,
           },
         };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
       }
     } catch (error) {
       return {
@@ -87,6 +143,11 @@ export class RatingService {
             rateRes,
           },
         };
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
       }
     } catch (error) {
       return {

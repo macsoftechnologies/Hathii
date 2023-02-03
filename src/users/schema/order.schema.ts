@@ -17,11 +17,11 @@ export class order extends Document{
     @Prop()
     date:string
     @Prop()
-    productId: string
+    vendorProductId: string
     @Prop()
     vendorId: string
-    @Prop()
-    status: string
+    @Prop({ default: 'received', enum: ['received', 'completed'] })
+    status:string
 }
 
 export const orderSchema=SchemaFactory.createForClass(order)

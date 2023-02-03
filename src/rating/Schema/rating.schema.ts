@@ -7,24 +7,23 @@ export class rating  extends Document{
    @Prop({required: true, default:uuid, unique:true})
    ratingId: string
    @Prop()
-   buyerId:string
+   userId:string
    @Prop()
-   responseRate:string
+   responseRate:number
    @Prop()
    rating:string
    @Prop()
    trustRating:string
    @Prop()
-   vendorVerficationRating:string
+   vendorVerficationRating:number
    @Prop()
-   overallRating:string
+   overallRating:number
    @Prop()
    vendorId:string
    @Prop()
-   productId:string
-   
-   
- 
+   vendorProductId:string
+   @Prop()
+   averageRating: number
 }
 
 export const ratingSchema=SchemaFactory.createForClass(rating)

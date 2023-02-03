@@ -1,5 +1,9 @@
 import { ApiProperty } from "@nestjs/swagger"
 
+enum status {
+    'received'='received',
+    'completed'='completed'
+}
  
 export class orderDto{
     @ApiProperty()
@@ -15,7 +19,7 @@ export class orderDto{
     @ApiProperty()
     date:string
     @ApiProperty()
-    productId: string
+    vendorProductId: string
     @ApiProperty()
     vendorId: string
     @ApiProperty()

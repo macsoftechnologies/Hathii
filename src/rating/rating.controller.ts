@@ -27,6 +27,23 @@ export class RatingController {
   }
 
   @ApiTags('rating')
+  @ApiBody({
+    type: ratingDto
+  })
+  @Post('/averageratingofvendor')
+  async averageratingofvendor(@Body() req: ratingDto) {
+    try{
+      const rate = await this.ratingService.vendorOverallRating(req);
+      return rate
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('rating')
   @Get('getRating')
   async resRate() {
     try {

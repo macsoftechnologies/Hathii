@@ -1,6 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { categoryDto } from 'src/category/dto/categoty.dto';
+import { Category } from 'src/category/schema/category.schema';
 import { userDto } from 'src/user/dto/user.dto';
 import { user } from 'src/user/dto/user.schema';
 import { inventoryManagementDto } from './dto/inventoryManangement.dto';
@@ -18,7 +20,8 @@ export class VendorproductsService {
     @InjectModel(inventoryManagement.name)
     private inventoryManagenmentModel: Model<inventoryManagement>,
     @InjectModel(ProductRequest.name) private productRequest: Model<ProductRequest>,
-    @InjectModel(user.name) private userModel: Model<user>
+    @InjectModel(user.name) private userModel: Model<user>,
+    @InjectModel(Category.name) private categoryModel: Model<Category>
   ) {}
 
   async vendorprodcreate(req: vendorproductDto, image) {
@@ -520,6 +523,40 @@ export class VendorproductsService {
     }
   }
 
+  async getProductByCategory(req: vendorproductDto) {
+    try{
+      const getproductsbycat = await this.categoryModel.findOne({categoryId: req.categoryId});
+      if(getproductsbycat) {
+        const getprods = await this.vendorproductModel.aggregate([
+          {$match: {categoryId: getproductsbycat.categoryId}},
+          {
+            $lookup:{
+              from: 'categories',
+              localField: 'categoryId',
+              foreignField: 'categoryId',
+              as: 'categoryId',
+            }
+          }
+        ]);
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "searched category products",
+          data: getprods,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid request"
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
   async sendproductRequest(req: productRequestDto) {
     try{
       const requestSend = await this.productRequest.create(req);
@@ -585,6 +622,38 @@ export class VendorproductsService {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error
+      }
+    }
+  }
+
+  async editproductRequest(req: productRequestDto) {
+    try{
+      const editproductrequest = await this.productRequest.updateOne({productRequestId: req.productRequestId},{
+        $set: {
+          userId: req.userId,
+          vendorId: req.vendorId,
+          vendorProductId:  req.vendorProductId,
+          quantity: req.quantity,
+          orderTotalAmount: req.orderTotalAmount, 
+          status: req.status
+        }
+      });
+      if(editproductrequest) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "updated successfully",
+          data: editproductrequest
+        }
+      } else{
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
       }
     }
   }
@@ -726,6 +795,35 @@ export class VendorproductsService {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error
+      }
+    }
+  }
+
+  async getProductRequestByVendorId(req: userDto) {
+    try{
+      const getprodreq = await this.productRequest.findOne({vendorId: req.vendorId});
+      if(getprodreq) {
+        const vendorprodreq = await this.userModel.aggregate([
+          {$match: {vendorId: getprodreq.vendorId}},
+          {
+            $lookup: {
+              from: "productrequests",
+              localField: "vendorId",
+              foreignField: "vendorId",
+              as: "productrequests",
+            }
+          }
+        ]);
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "productRequests of vendor",
+          data: vendorprodreq,
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
       }
     }
   }

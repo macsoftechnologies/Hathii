@@ -3,6 +3,7 @@ import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { ApiBody,  ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { categoryDto } from 'src/category/dto/categoty.dto';
 import { userDto } from 'src/user/dto/user.dto';
 import { inventoryManagementDto } from './dto/inventoryManangement.dto';
 import { productRequestDto } from './dto/productRequest.dto';
@@ -262,6 +263,23 @@ export class VendorproductsController {
 
   @ApiTags('vendorproducts')
   @ApiBody({
+    type: vendorproductDto
+  })
+  @Post('/getproductsbycategory')
+  async getProductsByCategory(@Body() req: vendorproductDto) {
+    try{
+      const getproducts = await this.vendorproductsService.getProductByCategory(req);
+      return getproducts;
+    } catch(error) {
+      return{
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
     type: productRequestDto
   })
   @Post('/createProductRequest')
@@ -307,6 +325,23 @@ export class VendorproductsController {
 
   @ApiTags('vendorproducts')
   @ApiBody({
+    type: productRequestDto
+  })
+  @Post('/editProductRequest')
+  async editProductRequest(@Body() req: productRequestDto) {
+    try{
+      const sendRequest = await this.vendorproductsService.editproductRequest(req);
+      return sendRequest
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
     type: userDto
   })
   @Post('/productrequestsofuser')
@@ -331,6 +366,23 @@ export class VendorproductsController {
     try{
       const acceptrequests = await this.vendorproductsService.acceptedRequestsOfVendor(req);
       return acceptrequests
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: userDto
+  })
+  @Post('/productrequestsofvendor')
+  async productrequestsofvendor(@Body() req: userDto) {
+    try{
+      const productrequests = await this.vendorproductsService.getProductRequestByVendorId(req);
+      return productrequests
     } catch(error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

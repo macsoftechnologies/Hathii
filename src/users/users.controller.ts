@@ -1,5 +1,6 @@
 import { Body, Controller, Get, HttpStatus, Post } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { userDto } from 'src/user/dto/user.dto';
 import { orderDto } from './dto/order.dto';
 import { UsersService } from './users.service';
 
@@ -80,6 +81,40 @@ export class UsersController {
     async OrderId(@Body() req:orderDto){
       try{
         const result=await  this.usersService.getOrderId(req)
+        return result
+      }catch(error){
+        return{
+          statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+          Message:error 
+        }
+      }
+    } 
+
+    @ApiTags('users')
+  @ApiBody({
+    type:userDto
+  })
+  @Post('/receivedordersofvendor')
+    async recievedorders(@Body() req:userDto){
+      try{
+        const result=await  this.usersService.receivedOrdersOfVendor(req)
+        return result
+      }catch(error){
+        return{
+          statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+          Message:error 
+        }
+      }
+    } 
+
+  @ApiTags('users')
+  @ApiBody({
+    type:userDto
+  })
+  @Post('/completedordersofvendor')
+    async completedorders(@Body() req:userDto){
+      try{
+        const result=await  this.usersService.completedOrdersOfVendor(req)
         return result
       }catch(error){
         return{

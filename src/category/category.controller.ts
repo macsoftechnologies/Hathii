@@ -197,4 +197,21 @@ export class CategoryController {
       }
     }
   }
+
+  @ApiTags('category')
+  @ApiBody({
+    type: categoryDto
+  })
+  @Post('/vendorproductsbycatname')
+  async vendorproductsbycat(@Body() req: categoryDto) {
+    try{
+      const search = await this.categoryService.getproductsbycategory(req);
+      return search
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
+    }
+  }
 }

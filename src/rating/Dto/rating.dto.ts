@@ -4,19 +4,21 @@ export class ratingDto{
    @ApiProperty()
    ratingId: string
    @ApiProperty()
-    buyerId:string
+    userId:string
     @ApiProperty()
-    responseRate:string
+    responseRate:number
     @ApiProperty()
     rating:string
     @ApiProperty()
     trustRating:string
     @ApiProperty()
-    vendorVerficationRating:string
+    vendorVerficationRating:number
     @ApiProperty()
-    overallRating:string
+    overallRating:number
     @ApiProperty()
     vendorId:string
     @ApiProperty()
-    productId:string
+    vendorProductId:string
+    @ApiProperty()
+    averageRating: number
 }

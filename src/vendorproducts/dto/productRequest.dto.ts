@@ -18,4 +18,6 @@ export class productRequestDto{
     quantity: string
     @ApiProperty()
     orderTotalAmount: string
+    @ApiProperty()
+    status: string
 }

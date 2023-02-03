@@ -1,7 +1,8 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { SharedService } from 'src/shared/shared.service';
+import { userDto } from 'src/user/dto/user.dto';
+import { user } from 'src/user/dto/user.schema';
 import { orderDto } from './dto/order.dto';
  import { order } from './schema/order.schema';
  
@@ -10,7 +11,7 @@ import { orderDto } from './dto/order.dto';
 export class UsersService {
   constructor(
     @InjectModel(order.name) private orderModel: Model<order>,
-    private sharedService: SharedService,
+    @InjectModel(user.name) private userModel: Model<user>,
   ) {}
 
   async createOrder(req: orderDto) {
@@ -76,9 +77,9 @@ export class UsersService {
             orderQuantity: req.orderQuantity,
             time: req.time,
             date: req.date,
-            productId: req.productId,
+            vendorProductId: req.vendorProductId,
             vendorId: req.vendorId,
-            status: req.status,
+            status: req.status
           },
         },
       );
@@ -112,4 +113,179 @@ export class UsersService {
       };
     }
   }
+
+  async receivedOrdersOfVendor(req: userDto) {
+    try{
+      const receivedorders = await this.userModel.findOne({
+        $or: [{vendorId: req.vendorId},{userId: req.userId}]
+      });
+      if(receivedorders) {
+        const receivedOrders = await this.orderModel.aggregate([
+          {$match: 
+            {$and: [
+                {status: 'received'},
+                {
+                  $or: [
+                    {vendorId: receivedorders.vendorId},
+                    {userId: receivedorders.userId}
+                  ]
+                }
+              ]}
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId'
+            }
+          }
+        ]);
+        const count = await this.orderModel.aggregate([
+          {$match: 
+            {$and: [
+                {status: 'received'},
+                {
+                  $or: [
+                    {vendorId: receivedorders.vendorId},
+                    {userId: receivedorders.userId}
+                  ]
+                }
+              ]}
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId'
+            }
+          },
+          {
+            $count: "count"
+          }
+        ]);
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Received Orders of vendor",
+          data: receivedOrders,
+          count: count,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  async completedOrdersOfVendor(req: userDto) {
+    try{
+      const completedorders = await this.userModel.findOne({
+        $or: [{vendorId: req.vendorId},{userId: req.userId}]
+      });
+      if(completedorders) {
+        const receivedOrders = await this.orderModel.aggregate([
+          {$match: 
+            {$and: [
+                {status: 'completed'},
+                {
+                  $or: [
+                    {vendorId: completedorders.vendorId},
+                    {userId: completedorders.userId}
+                  ]
+                }
+              ]}
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId'
+            }
+          }
+        ]);
+        const count = await this.orderModel.aggregate([
+          {$match: 
+            {$and: [
+                {status: 'completed'},
+                {
+                  $or: [
+                    {vendorId: completedorders.vendorId},
+                    {userId: completedorders.userId}
+                  ]
+                }
+              ]}
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId'
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId'
+            }
+          },
+          {
+            $count: "count"
+          }
+        ]);
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Received Orders of vendor",
+          data: receivedOrders,
+          count: count,
+        }
+      } else {
+        return {
+          statusCode: HttpStatus.BAD_REQUEST,
+          msg: "Invalid Request",
+        }
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
  }
