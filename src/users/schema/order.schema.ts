@@ -20,7 +20,7 @@ export class order extends Document{
     vendorProductId: string
     @Prop()
     vendorId: string
-    @Prop({ default: 'received', enum: ['received', 'completed'] })
+    @Prop({ default: 'received', enum: ['received', 'accepted', 'completed'] })
     status:string
 }
 

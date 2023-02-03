@@ -2,6 +2,7 @@ import { ApiProperty } from "@nestjs/swagger"
 
 enum status {
     'received'='received',
+    'accepted' = 'accepted',
     'completed'='completed'
 }
  
