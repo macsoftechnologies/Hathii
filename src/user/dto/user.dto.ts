@@ -32,6 +32,8 @@ export class loginDto{
  
 export class userDto  {
     @ApiProperty()
+    serviceId:string
+    @ApiProperty()
     providerId:string
     @ApiProperty()
     userId:string

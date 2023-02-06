@@ -45,7 +45,7 @@ export class UserController {
     }
   }
 
-  @Post('/createService')
+  @Post('/addService')
   async createServ(@Body() body:userDto){
     try{
       
@@ -246,22 +246,7 @@ async updateProvider(@Body() body:userDto,@UploadedFiles() image){
 
 
  
-//  @Put('/:id')
-//   async updateRole(@Param('id') id: string, @Body('body') body:userDto) {
-//     try{
-//     if (!Object.keys(body).includes('role')) {
-//       throw new BadRequestException(`Invalid role value`);
-//     }
-
-//     return this.userService.updateRole(id, body.role);
-//   }catch(error){
-//     return {
-//       statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
-//       message:error 
-//     }
-//   }
-//   }
-
+ 
 
 @Put('/:id')
 async updateUserRoles(@Param('id') id: string, @Body() roles:userDto) {
@@ -282,4 +267,46 @@ async updateUserRoles(@Param('id') id: string, @Body() roles:userDto) {
 }
 }
 
+
+  @Post('/getuser')
+  async getUsers(@Body() body:userDto){
+    try{
+      const result=await this.userService.getAll(body)
+      return result
+    }catch(error){
+      return {
+        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+        message:error 
+      }
+    }
+  }
+
+
+  @Post('/getServiceById')
+  async servicedata(@Body() body:userDto){
+      try{
+        const result=await this.userService.getService(body)
+        return result
+      }catch(error){
+        return {
+          statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+          message:error 
+        }
+      }
+  }
+
+
+  @Post('/updateService')
+  async editservice(@Body() body:userDto){
+    try{
+      const response=await this.userService.editService(body)
+      return response
+    }catch(error){
+      return {
+        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+        message:error 
+      }
+    }
+  }
+ 
 }
