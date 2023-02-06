@@ -15,7 +15,7 @@ export class ProductRequest extends Document {
   quantity: string;
   @Prop()
   orderTotalAmount: string;
-  @Prop({ default: 'pending', enum: ['pending', 'accepted'] })
+  @Prop({ default: 'pending', enum: ['pending', 'received', 'completed'] })
   status: string;
   @Prop()
   date: string;

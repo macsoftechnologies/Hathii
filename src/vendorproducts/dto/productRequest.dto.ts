@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 
 enum status {
   'pending' = 'pending',
-  'accepted' = 'accepted',
+  'received' = 'received',
+  'completed'='completed'
 }
 
 export class productRequestDto {

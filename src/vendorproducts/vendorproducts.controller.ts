@@ -396,7 +396,25 @@ export class VendorproductsController {
   @ApiBody({
     type: userDto,
   })
-  @Post('/acceptedproductrequests')
+  @Post('/pendingproductrequests')
+  async pendingproductrequests(@Body() req: userDto) {
+    try {
+      const acceptrequests =
+        await this.vendorproductsService.pendingRequestsOfVendor(req);
+      return acceptrequests;
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: userDto,
+  })
+  @Post('/receivedproductrequests')
   async acceptedproductrequests(@Body() req: userDto) {
     try {
       const acceptrequests =
@@ -414,12 +432,30 @@ export class VendorproductsController {
   @ApiBody({
     type: userDto,
   })
-  @Post('/productrequestsofvendor')
-  async productrequestsofvendor(@Body() req: userDto) {
+  @Post('/completedproductrequests')
+  async completedproductrequests(@Body() req: userDto) {
     try {
-      const productrequests =
-        await this.vendorproductsService.getProductRequestByVendorId(req);
-      return productrequests;
+      const acceptrequests =
+        await this.vendorproductsService.completedRequestsOfVendor(req);
+      return acceptrequests;
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  @ApiTags('vendorproducts')
+  @ApiBody({
+    type: productRequestDto,
+  })
+  @Post('/deleteproductrequest')
+  async deleteproductrequest(@Body() req: productRequestDto) {
+    try {
+      const acceptrequests =
+        await this.vendorproductsService.deleteRequest(req);
+      return acceptrequests;
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
