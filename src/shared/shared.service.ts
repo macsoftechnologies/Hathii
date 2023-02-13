@@ -9,12 +9,6 @@ const iv = crypto.randomBytes(16);
 
 @Injectable()
 export class SharedService {
-  async encryption(text) {
-    let cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(key), iv);
-    let encrypted = cipher.update(text);
-    encrypted = Buffer.concat([encrypted, cipher.final()]);
-    return { iv: iv.toString('hex'), encryptedText: encrypted.toString('hex') };
-  }
 
   async saveFile(file: any): Promise<any> {
     try {

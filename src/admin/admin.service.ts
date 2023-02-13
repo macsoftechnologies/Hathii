@@ -44,22 +44,12 @@ export class AdminService {
   async Create(req: adminDto) {
     try {
       const registerRes = await this.adminModel.create(req);
-      // const encrypt = await this.sharedService.encryption(req.password);
-      // const replacement = await this.adminModel.replaceOne({password: registerRes.password},{
-      //   adminId: registerRes.adminId,
-      //   email: registerRes.email,
-      //   password: encrypt.encryptedText,
-      //   mobileNum: registerRes.mobileNum,
-      // })
+      
       if (registerRes) {
         return {
           statusCode: HttpStatus.OK,
           message: 'admin  Registered Successfully',
-          data: {
-            authentication: {
-              respons: registerRes,
-            },
-          },
+          data: registerRes,
         };
       }
       return {
@@ -81,25 +71,24 @@ export class AdminService {
           $or: [{ email: req.email }, { mobileNum: req.mobileNum }],
         })
         .lean();
-      // const encrypt = await this.sharedService.encryption(req.password);
       if (loginRes) {
-        // if (encrypt.encryptedText === loginRes.password) {
+        if(loginRes.password === req.password) {
         return {
           statusCode: HttpStatus.OK,
           message: 'Login SuccessFull',
           login: loginRes,
-          // encryptedData: encrypt,
         };
+      } else {
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          msg: "Password invalid",
+        }
+      }
       }
       return {
         statusCode: HttpStatus.UNAUTHORIZED,
         message: 'Invalid Password',
       };
-
-      // return {
-      //   statusCode: HttpStatus.UNAUTHORIZED,
-      //   message: 'admin  not found',
-      // };
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
