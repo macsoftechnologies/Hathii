@@ -24,6 +24,8 @@ export class rating  extends Document{
    vendorProductId:string
    @Prop()
    averageRating: number
+   @Prop({required: true})
+   role: string
 }
 
 export const ratingSchema=SchemaFactory.createForClass(rating)

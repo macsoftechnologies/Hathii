@@ -12,6 +12,8 @@ export class rewardpoint  extends Document{
     vendorId:string
     @Prop()
     rewardpoints:string
+    @Prop({required: true})
+    role: string
 }
 
 export const rewardpointSchema=SchemaFactory.createForClass(rewardpoint)

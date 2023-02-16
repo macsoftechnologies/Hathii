@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { user } from 'src/user/dto/user.schema';
 import { ratingDto } from './Dto/rating.dto';
 import { reviewDto } from './Dto/review.dto';
 import { userRatingDto } from './Dto/userrating.dto';
@@ -20,21 +21,31 @@ export class RatingService {
     try {
       const rate = await this.ratingModel.create(req);
       if (rate) {
-        rate.averageRating = (req.vendorVerficationRating + req.overallRating + req.responseRate)/3;
-        const updating = await this.ratingModel.updateOne({userId: rate.userId},{
-          $set: {
-            ratingId: rate.ratingId,
-            userId: rate.userId,
-            responseRate: rate.responseRate,
-            rating: rate.rating,
-            trustRating: rate.trustRating,
-            vendorVerficationRating: rate.vendorVerficationRating,
-            overallRating: rate.overallRating,
-            vendorId: rate.vendorId,
-            vendorProductId: rate.vendorProductId,
-            averageRating: (rate.responseRate + rate.vendorVerficationRating + rate.overallRating)/3
-          }
-        });
+        rate.averageRating =
+          (req.vendorVerficationRating + req.overallRating + req.responseRate) /
+          3;
+        const updating = await this.ratingModel.updateOne(
+          { ratingId: rate.ratingId },
+          {
+            $set: {
+              ratingId: rate.ratingId,
+              userId: rate.userId,
+              responseRate: rate.responseRate,
+              rating: rate.rating,
+              trustRating: rate.trustRating,
+              vendorVerficationRating: rate.vendorVerficationRating,
+              overallRating: rate.overallRating,
+              vendorId: rate.vendorId,
+              vendorProductId: rate.vendorProductId,
+              role: rate.role,
+              averageRating:
+                (rate.responseRate +
+                  rate.vendorVerficationRating +
+                  rate.overallRating) /
+                3,
+            },
+          },
+        );
         return {
           statusCode: HttpStatus.OK,
           res: rate,
@@ -42,8 +53,8 @@ export class RatingService {
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
     } catch (error) {
       return {
@@ -54,24 +65,46 @@ export class RatingService {
   }
 
   async vendorOverallRating(req: ratingDto) {
-    try{
-      const vendorRating = await this.ratingModel.find({vendorId: req.vendorId});
-      if(vendorRating) {
-        const count = await this.ratingModel.find({vendorId: req.vendorId}).count();
+    try {
+      const vendorRating = await this.ratingModel.find({
+        $and: [{userId: req.userId},{role: req.role}]
+      });
+      if (vendorRating) {
+        const count = await this.ratingModel
+          .find({ $and: [{userId: req.userId},{role: req.role}] })
+          .count();
         let sum = vendorRating.reduce((a, b) => a + b.averageRating, 0);
-        const avg = sum/count;
-        return{
+        const avg = sum / count;
+        return {
           statusCode: HttpStatus.OK,
-          msg: "OverAll Rating of the vendor",
+          msg: 'OverAll Rating of the vendor',
           averageRatingofVendor: avg,
-        }
-      } else{
-        return{
+        };
+      } else {
+        return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
+          msg: 'Invalid Request',
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      };
+    }
+  }
+
+  async getVendorRatings(req: ratingDto) {
+    try{
+      const getvendorratings = await this.ratingModel.find({role: req.role});
+      if(getvendorratings) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Ratings of the requested role",
+          data: getvendorratings,
         }
       }
-    } catch(error) {
+    }  catch(error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
@@ -83,23 +116,85 @@ export class RatingService {
     try {
       const res = await this.ratingModel.find();
       if (res) {
+        const vendorsget = await this.ratingModel.aggregate([
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId',
+            }
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId',
+            }
+          },
+          {
+            $lookup: {
+              from: 'vendorproducts',
+              localField: 'vendorProdId',
+              foreignField: 'vendorProdId',
+              as: 'vendorProdId',
+            }
+          }
+        ]);
         return {
           statusCode: HttpStatus.OK,
           message: 'details',
-          data: {
-            res,
-          },
+          data: vendorsget,
         };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         Message: error,
+      };
+    }
+  }
+
+  async updateRating(req: ratingDto) {
+    try {
+      const moderate = await this.ratingModel.updateOne(
+        { ratingId: req.ratingId },
+        {
+          $set: {
+            userId: req.userId,
+            responseRate: req.responseRate,
+            rating: req.rating,
+            trustRating: req.trustRating,
+            vendorVerficationRating: req.vendorVerficationRating,
+            overallRating: req.overallRating,
+            vendorId: req.vendorId,
+            vendorProductId: req.vendorProductId,
+            averageRating: req.averageRating,
+            role: req.role,
+          },
+        },
+      );
+      if(moderate) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Updated rate successfully",
+          data: moderate,
+        }
+      }
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        msg: "Invalid Request",
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
       };
     }
   }
@@ -120,8 +215,8 @@ export class RatingService {
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
     } catch (error) {
       return {
@@ -146,8 +241,8 @@ export class RatingService {
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
     } catch (error) {
       return {
@@ -373,25 +468,27 @@ export class RatingService {
   }
 
   async deleteUserRating(req: userRatingDto) {
-    try{
-      const removeUserRating = await this.userRatingModel.deleteOne({userRatingId: req.userRatingId});
-      if(removeUserRating) {
+    try {
+      const removeUserRating = await this.userRatingModel.deleteOne({
+        userRatingId: req.userRatingId,
+      });
+      if (removeUserRating) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Deleted userRating Successfully",
+          msg: 'Deleted userRating Successfully',
           data: removeUserRating,
-        }
-      } else{
+        };
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 }

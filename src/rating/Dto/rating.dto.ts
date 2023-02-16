@@ -21,4 +21,6 @@ export class ratingDto{
     vendorProductId:string
     @ApiProperty()
     averageRating: number
+    @ApiProperty()
+    role: string
 }

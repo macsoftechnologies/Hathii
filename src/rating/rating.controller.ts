@@ -44,6 +44,23 @@ export class RatingController {
   }
 
   @ApiTags('rating')
+  @ApiBody({
+    type: ratingDto
+  })
+  @Post('/getratingsByRole')
+  async getRatingsByRole(@Body() req: ratingDto) {
+    try{
+      const getThem = await this.ratingService.getVendorRatings(req);
+      return getThem
+    } catch( error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+  }
+
+  @ApiTags('rating')
   @Get('getRating')
   async resRate() {
     try {
@@ -54,6 +71,23 @@ export class RatingController {
         statusCode: HttpStatus.OK,
         Message: error,
       };
+    }
+  }
+
+  @ApiTags('rating')
+  @ApiBody({
+    type: ratingDto
+  })
+  @Post('/updaterating')
+  async updaterating(@Body() req: ratingDto) {
+    try{
+      const moderate = await this.ratingService.updateRating(req);
+      return moderate
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
     }
   }
 

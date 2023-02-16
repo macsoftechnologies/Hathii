@@ -8,6 +8,6 @@ export class complaintDto{
     @ApiProperty()
     vendorId:string
     @ApiProperty()
-    feedback:string
+    complaint:string
 
 }

@@ -11,7 +11,7 @@ export class complaint extends Document{
     @Prop()
     vendorId:string
     @Prop()
-    feedback:string
+    complaint:string
 }
 
 export const complaintSchema=SchemaFactory.createForClass(complaint)

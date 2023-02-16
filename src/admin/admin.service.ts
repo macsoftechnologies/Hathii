@@ -181,12 +181,20 @@ export class AdminService {
     try {
       const getProd = await this.adminProductModel.find();
       if (getProd) {
+        const getvendors = await this.adminProductModel.aggregate([
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId'
+            }
+          }
+        ]);
         return {
           statusCode: HttpStatus.OK,
           Message: 'list of products',
-          data: {
-            getProd,
-          },
+          data: getvendors,
         };
       }
     } catch (error) {
@@ -585,7 +593,7 @@ export class AdminService {
           $set: {
             userId: req.userId,
             vendorId: req.vendorId,
-            feedback: req.feedback,
+            complaint: req.complaint,
           },
         },
       );
