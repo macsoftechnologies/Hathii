@@ -91,6 +91,7 @@ export class UserService {
       }
       if (params.role === 'user') {
         (userObject.userId = params.userId),
+        (userObject.mobileNumber=params.mobileNumber),
           (userObject.userName = params.userName),
           (userObject.firstName = params.firstName),
           (userObject.lastName = params.lastName),
@@ -565,4 +566,5 @@ export class UserService {
       };
     }
   }
+  
 }
