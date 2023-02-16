@@ -2,6 +2,8 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { SharedService } from 'src/shared/shared.service';
+import { userDto } from 'src/user/dto/user.dto';
+import { user } from 'src/user/dto/user.schema';
 import { adminDto } from './Dto/admin.dto';
 import { adminproductDto } from './Dto/adminproduct.dto';
 import { appliedThemesDto } from './Dto/appliedThemes.dto';
@@ -38,13 +40,13 @@ export class AdminService {
     private notificationModel: Model<Notification>,
     @InjectModel(Coupon.name) private couponModel: Model<Coupon>,
     @InjectModel(Theme.name) private themeModel: Model<Theme>,
-    @InjectModel(appliedTheme.name) private appliedThemeModel: Model<Theme>
+    @InjectModel(appliedTheme.name) private appliedThemeModel: Model<Theme>,
   ) {}
 
   async Create(req: adminDto) {
     try {
       const registerRes = await this.adminModel.create(req);
-      
+
       if (registerRes) {
         return {
           statusCode: HttpStatus.OK,
@@ -72,18 +74,18 @@ export class AdminService {
         })
         .lean();
       if (loginRes) {
-        if(loginRes.password === req.password) {
-        return {
-          statusCode: HttpStatus.OK,
-          message: 'Login SuccessFull',
-          login: loginRes,
-        };
-      } else {
-        return {
-          statusCode: HttpStatus.NOT_FOUND,
-          msg: "Password invalid",
+        if (loginRes.password === req.password) {
+          return {
+            statusCode: HttpStatus.OK,
+            message: 'Login SuccessFull',
+            login: loginRes,
+          };
+        } else {
+          return {
+            statusCode: HttpStatus.NOT_FOUND,
+            msg: 'Password invalid',
+          };
         }
-      }
       }
       return {
         statusCode: HttpStatus.UNAUTHORIZED,
@@ -181,7 +183,7 @@ export class AdminService {
       if (getProd) {
         return {
           statusCode: HttpStatus.OK,
-          Message: 'lst of products',
+          Message: 'list of products',
           data: {
             getProd,
           },
@@ -203,6 +205,75 @@ export class AdminService {
       if (adminProdId) {
         return {
           statusCode: HttpStatus.OK,
+          prod: adminProdId,
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        Message: error,
+      };
+    }
+  }
+
+  async updateAdminProduct(req: adminproductDto, image) {
+    try {
+
+      console.log(req, 'documents...', image);
+      if (image) {
+        const reqDoc = image.map((doc, index) => {
+          let IsPrimary = false;
+          if (index == 0) {
+            IsPrimary = true;
+          }
+          const randomNumber = Math.floor(Math.random() * 1000000 + 1);
+          return doc.filename;
+        });
+
+        req.productImage = reqDoc.toString();
+      }
+      console.log(req);
+
+      const adminProdId = await this.adminProductModel.updateOne(
+        { productId: req.productId },
+        {
+          $set: {
+            vendorId: req.vendorId,
+            categoryId: req.categoryId,
+            productName: req.productName,
+            productDescription: req.productDescription,
+            productImage: req.productImage,
+            adminProductId: req.adminProductId,
+            specifications: req.specifications,
+            price: req.price,
+            quantity: req.quantity,
+            discount: req.discount,
+          },
+        },
+      );
+      if (adminProdId) {
+        return {
+          statusCode: HttpStatus.OK,
+          prod: adminProdId,
+        };
+      }
+    } catch (error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        Message: error,
+      };
+    }
+  }
+
+  async deleteAdminProduct(req: adminproductDto) {
+    try {
+      const adminProdId = await this.adminProductModel.deleteOne({
+        productId: req.productId,
+      });
+      if (adminProdId) {
+        return {
+          statusCode: HttpStatus.OK,
+          msg: 'Deleted Successfully',
           prod: adminProdId,
         };
       }
@@ -366,9 +437,27 @@ export class AdminService {
     try {
       const getfeed = await this.feedbackModel.find();
       if (getfeed) {
+        const getFeedBack = await this.feedbackModel.aggregate([
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId',
+            },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId',
+            },
+          },
+        ]);
         return {
           statusCode: HttpStatus.OK,
-          res: getfeed,
+          res: getFeedBack,
         };
       }
     } catch (error) {
@@ -438,9 +527,27 @@ export class AdminService {
     try {
       const rescomplaint = await this.complaintModel.find();
       if (rescomplaint) {
+        const getFeedBack = await this.complaintModel.aggregate([
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId',
+            },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId',
+            },
+          },
+        ]);
         return {
           statusCode: HttpStatus.OK,
-          complaintres: rescomplaint,
+          complaintres: getFeedBack,
         };
       }
     } catch (error) {
@@ -521,9 +628,27 @@ export class AdminService {
     try {
       const respoints = await this.rewardpointModel.find();
       if (respoints) {
+        const getFeedBack = await this.rewardpointModel.aggregate([
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId',
+            },
+          },
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId',
+            },
+          },
+        ]);
         return {
           statusCode: HttpStatus.OK,
-          points: respoints,
+          points: getFeedBack,
         };
       }
     } catch (error) {
@@ -866,7 +991,7 @@ export class AdminService {
   }
 
   async addThemes(req: themeDto, image) {
-    try{
+    try {
       if (image) {
         if (image.themeImage && image.themeImage[0]) {
           const attachmentFile = await this.sharedService.saveFile(
@@ -884,75 +1009,74 @@ export class AdminService {
       }
 
       const add = await this.themeModel.create(req);
-      if(add) {
+      if (add) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Theme added Successfully",
+          msg: 'Theme added Successfully',
           data: add,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async getThemes() {
-    try{
+    try {
       const getAll = await this.themeModel.find();
-      if(getAll) {
+      if (getAll) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "List of Themes",
+          msg: 'List of Themes',
           data: getAll,
-        }
-      } else{
+        };
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async getThemeById(req: themeDto) {
-    try{
-      const getIt = await this.themeModel.findOne({themeId: req.themeId});
-      if(getIt) {
+    try {
+      const getIt = await this.themeModel.findOne({ themeId: req.themeId });
+      if (getIt) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Details of the theme",
+          msg: 'Details of the theme',
           data: getIt,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid request",
-        }
+          msg: 'Invalid request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async updatetheme(req: themeDto, image) {
-    try{
-
+    try {
       if (image) {
         if (image.themeImage && image.themeImage[0]) {
           const attachmentFile = await this.sharedService.saveFile(
@@ -969,171 +1093,184 @@ export class AdminService {
         }
       }
 
-      const moderate = await this.themeModel.updateOne({themeId: req.themeId},{
-        $set: {
-          themeImage: req.themeImage,
-          themeColor: req.themeColor,
-        }
-      });
-      if(moderate) {
+      const moderate = await this.themeModel.updateOne(
+        { themeId: req.themeId },
+        {
+          $set: {
+            themeImage: req.themeImage,
+            themeColor: req.themeColor,
+          },
+        },
+      );
+      if (moderate) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Updated Successfully",
+          msg: 'Updated Successfully',
           data: moderate,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async deleteTheme(req: themeDto) {
-    try{
-      const eliminate = await this.themeModel.deleteOne({themeId: req.themeId});
-      if(eliminate) {
+    try {
+      const eliminate = await this.themeModel.deleteOne({
+        themeId: req.themeId,
+      });
+      if (eliminate) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Deleted Successfully",
+          msg: 'Deleted Successfully',
           data: eliminate,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async addappliedTheme(req: appliedThemesDto) {
-    try{
+    try {
       const addappliedtheme = await this.appliedThemeModel.create(req);
-      if(addappliedtheme) {
+      if (addappliedtheme) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Theme applied",
+          msg: 'Theme applied',
           data: addappliedtheme,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid request",
-        }
+          msg: 'Invalid request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async getappliedTheme() {
-    try{
+    try {
       const getappliedtheme = await this.appliedThemeModel.find();
-      if(getappliedtheme) {
+      if (getappliedtheme) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "List of applied themes",
+          msg: 'List of applied themes',
           data: getappliedtheme,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid request",
-        }
+          msg: 'Invalid request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async getappliedThemeById(req: appliedThemesDto) {
-    try{
-      const getappliedtheme = await this.appliedThemeModel.findOne({appliedThemeId: req.appliedThemeId});
-      if(getappliedtheme) {
+    try {
+      const getappliedtheme = await this.appliedThemeModel.findOne({
+        appliedThemeId: req.appliedThemeId,
+      });
+      if (getappliedtheme) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Applied theme",
+          msg: 'Applied theme',
           data: getappliedtheme,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid request",
-        }
+          msg: 'Invalid request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async updateappliedThemeById(req: appliedThemesDto) {
-    try{
-      const updateappliedtheme = await this.appliedThemeModel.updateOne({appliedThemeId: req.appliedThemeId},
-        {$set: {
-          userId: req.userId,
-          vendorId: req.vendorId,
-        }});
-      if(updateappliedtheme) {
+    try {
+      const updateappliedtheme = await this.appliedThemeModel.updateOne(
+        { appliedThemeId: req.appliedThemeId },
+        {
+          $set: {
+            userId: req.userId,
+            vendorId: req.vendorId,
+          },
+        },
+      );
+      if (updateappliedtheme) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Applied theme",
+          msg: 'Applied theme',
           data: updateappliedtheme,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid request",
-        }
+          msg: 'Invalid request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async deleteappliedThemeById(req: appliedThemesDto) {
-    try{
-      const deleteappliedtheme = await this.appliedThemeModel.deleteOne({appliedThemeId: req.appliedThemeId});
-      if(deleteappliedtheme) {
+    try {
+      const deleteappliedtheme = await this.appliedThemeModel.deleteOne({
+        appliedThemeId: req.appliedThemeId,
+      });
+      if (deleteappliedtheme) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Applied theme",
+          msg: 'Applied theme',
           data: deleteappliedtheme,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid request",
-        }
+          msg: 'Invalid request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 }

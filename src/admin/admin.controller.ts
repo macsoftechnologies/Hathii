@@ -3,6 +3,7 @@ import {  AnyFilesInterceptor, FileFieldsInterceptor} from '@nestjs/platform-exp
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { userDto } from 'src/user/dto/user.dto';
 import { AdminService } from './admin.service';
 import { adminDto } from './Dto/admin.dto';
 import { adminproductDto } from './Dto/adminproduct.dto';
@@ -126,6 +127,51 @@ async login(@Body() req: adminDto){
   async getadminproduct(@Body() req:adminproductDto){
     try{
       const prodId=await this.adminService.getProductId(req)
+      return prodId
+    }catch(error){
+      return{
+        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+        Message:error
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type:adminproductDto
+  })
+  @Post('/updateadminProduct')
+  @UseInterceptors(
+    AnyFilesInterceptor({
+        storage: diskStorage({
+            destination: './files',
+            filename: (req, file, cb) => {
+                const randomName = Array(32).fill(null).map(() => (Math.round(Math.random() * 16)).toString(16)).join('')
+                cb(null, `${randomName}${extname(file.originalname)}`)
+            }
+        }),
+    }),
+)
+  async updateadminproduct(@Body() req:adminproductDto, @UploadedFiles() image){
+    try{
+      const prodId=await this.adminService.updateAdminProduct(req, image)
+      return prodId
+    }catch(error){
+      return{
+        statusCode:HttpStatus.INTERNAL_SERVER_ERROR,
+        Message:error
+      }
+    }
+  }
+
+  @ApiTags('admin')
+  @ApiBody({
+    type:adminproductDto
+  })
+  @Post('/deleteadminProduct')
+  async deleteadminproduct(@Body() req:adminproductDto){
+    try{
+      const prodId=await this.adminService.deleteAdminProduct(req)
       return prodId
     }catch(error){
       return{

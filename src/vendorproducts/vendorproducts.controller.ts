@@ -87,7 +87,7 @@ export class VendorproductsController {
   @ApiBody({
     type: vendorproductDto,
   })
-  @Post('/deletevendorPorduct')
+  @Post('/deletevendorProduct')
   async prodDel(@Body() req: vendorproductDto) {
     try {
       const resProd = await this.vendorproductsService.deleteProd(req);
