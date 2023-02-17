@@ -243,7 +243,7 @@ export class VendorproductsService {
               productImage: req.productImage,
               price: req.price,
               discount: req.discount,
-              finalPrice: req.finalPrice,
+              finalPrice: (req.price - (req.price * (req.discount/100))),
               longitude: req.longitude,
               latitude: req.latitude,
               shopType: req.shopType,
@@ -276,7 +276,7 @@ export class VendorproductsService {
               // productImage: req.productImage,
               price: req.price,
               discount: req.discount,
-              finalPrice: req.finalPrice,
+              finalPrice: (req.price - (req.price * (req.discount/100))),
               longitude: req.longitude,
               latitude: req.latitude,
               shopType: req.shopType,
@@ -375,6 +375,18 @@ export class VendorproductsService {
     try {
       const addinventmanage = await this.inventoryManagenmentModel.create(req);
       if (addinventmanage) {
+        addinventmanage.closingStock = addinventmanage.openingStock - addinventmanage.sale;
+        const update = await this.inventoryManagenmentModel.updateOne(
+          { inventoryManagementId: addinventmanage.inventoryManagementId },
+          {
+            $set: {
+              vendorProdId: addinventmanage.vendorProdId,
+              openingStock: addinventmanage.openingStock,
+              sale: addinventmanage.sale,
+              closingStock: addinventmanage.openingStock - addinventmanage.sale,
+            },
+          },
+        );
         return {
           statusCode: HttpStatus.OK,
           data: addinventmanage,
