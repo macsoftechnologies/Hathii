@@ -644,15 +644,7 @@ export class AdminService {
               foreignField: 'userId',
               as: 'userId',
             },
-          },
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'vendorId',
-              foreignField: 'vendorId',
-              as: 'vendorId',
-            },
-          },
+          }
         ]);
         return {
           statusCode: HttpStatus.OK,
@@ -717,8 +709,8 @@ export class AdminService {
         {
           $set: {
             userId: req.userId,
-            vendorId: req.vendorId,
             rewardpoints: req.rewardpoints,
+            role: req.role
           },
         },
       );

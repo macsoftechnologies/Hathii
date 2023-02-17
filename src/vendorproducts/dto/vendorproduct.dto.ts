@@ -12,11 +12,11 @@ export class vendorproductDto{
     @ApiProperty()
     productImage: []
     @ApiProperty()
-    price:string
+    price:number
     @ApiProperty()
-    discount:string 
+    discount:number 
     @ApiProperty()
-    finalPrice:string
+    finalPrice:number
     @ApiProperty()
     longitude: []
     @ApiProperty()

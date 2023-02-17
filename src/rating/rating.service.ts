@@ -98,10 +98,39 @@ export class RatingService {
     try{
       const getvendorratings = await this.ratingModel.find({role: req.role});
       if(getvendorratings) {
+        const getvendors = await this.ratingModel.aggregate([
+          {$match: {userId: getvendorratings[0].userId}},
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId'
+            }
+          },
+         // {$match: {vendorId: getvendorratings[0].vendorId}},
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorId'
+            }
+          },
+          {$match: {vendorProductId: getvendorratings[0].vendorProductId}},
+          {
+            $lookup: {
+              from: 'vendorproducts',
+              localField: 'vendorProductId',
+              foreignField: 'vendorProdId',
+              as: 'vendorProductId'
+            }
+          }
+        ]);
         return {
           statusCode: HttpStatus.OK,
           msg: "Ratings of the requested role",
-          data: getvendorratings,
+          data: getvendors,
         }
       }
     }  catch(error) {

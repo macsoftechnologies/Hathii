@@ -9,8 +9,6 @@ export class rewardpoint  extends Document{
     @Prop()
     userId:string
     @Prop()
-    vendorId:string
-    @Prop()
     rewardpoints:string
     @Prop({required: true})
     role: string

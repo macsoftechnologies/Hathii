@@ -6,8 +6,7 @@ export class rewardpointDto{
     @ApiProperty()
     userId:string
     @ApiProperty()
-    vendorId:string
-    @ApiProperty()
     rewardpoints:string
-
+    @ApiProperty()
+    role: string
 }

@@ -19,14 +19,14 @@ export class VendorproductsService {
     private vendorproductModel: Model<vendorproduct>,
     @InjectModel(inventoryManagement.name)
     private inventoryManagenmentModel: Model<inventoryManagement>,
-    @InjectModel(ProductRequest.name) private productRequest: Model<ProductRequest>,
+    @InjectModel(ProductRequest.name)
+    private productRequest: Model<ProductRequest>,
     @InjectModel(user.name) private userModel: Model<user>,
-    @InjectModel(Category.name) private categoryModel: Model<Category>
+    @InjectModel(Category.name) private categoryModel: Model<Category>,
   ) {}
 
   async vendorprodcreate(req: vendorproductDto, image) {
     try {
-
       console.log(req, 'documents...', image);
       if (image) {
         const reqDoc = image.map((doc, index) => {
@@ -43,11 +43,44 @@ export class VendorproductsService {
 
       const vendorProres = await this.vendorproductModel.create(req);
       if (vendorProres) {
+        vendorProres.finalPrice = (vendorProres.price - (vendorProres.price * (vendorProres.discount/100)));
+        vendorProres.hold = vendorProres.hold + vendorProres.request;
+        vendorProres.availability = vendorProres.quantity - vendorProres.hold - vendorProres.request;
+        const updating = await this.vendorproductModel.updateOne(
+          { vendorProdId: vendorProres.vendorProdId },
+          {
+            $set: {
+              vendorId: vendorProres.vendorId,
+              vendorName: vendorProres.vendorName,
+              productName: vendorProres.productName,
+              productImage: vendorProres.productImage,
+              price: vendorProres.price,
+              discount: vendorProres.discount,
+              finalPrice: (vendorProres.price - (vendorProres.price * (vendorProres.discount/100))),
+              longitude: vendorProres.longitude,
+              latitude: vendorProres.latitude,
+              shopType: vendorProres.shopType,
+              categoryId: vendorProres.categoryId,
+              subCategoryId: vendorProres.subCategoryId,
+              productDetails: vendorProres.productDetails,
+              policy: vendorProres.policy,
+              description: vendorProres.description,
+              hold: (vendorProres.hold + vendorProres.request),
+              request: vendorProres.request,
+              availability: (vendorProres.quantity - vendorProres.hold - vendorProres.request),
+              quantity: vendorProres.quantity,
+            },
+          },
+        );
         return {
           statusCode: HttpStatus.OK,
           VendproRes: vendorProres,
         };
       }
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        msg: 'Invalid Request',
+      };
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -75,57 +108,57 @@ export class VendorproductsService {
   }
 
   async getvendorproductsofVendor(req: userDto) {
-    try{
+    try {
       const vendor = await this.userModel.findOne({
         $or: [
-          {vendorId: req.vendorId},
-          {userId: req.userId},
-          {providerId: req.providerId}
-        ]
+          { vendorId: req.vendorId },
+          { userId: req.userId },
+          { providerId: req.providerId },
+        ],
       });
-      if(vendor) {
+      if (vendor) {
         const vendorproducts = await this.userModel.aggregate([
-          {$match: {vendorId: vendor.vendorId}},
+          { $match: { vendorId: vendor.vendorId } },
           {
             $lookup: {
-              from: "vendorproducts",
-              localField: "vendorId",
-              foreignField: "vendorId",
-              as: "vendorproducts",
-            }
-          }
+              from: 'vendorproducts',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorproducts',
+            },
+          },
         ]);
         const count = await this.vendorproductModel.aggregate([
-          {$match: {vendorId: vendor.vendorId}},
+          { $match: { vendorId: vendor.vendorId } },
           {
             $lookup: {
-              from: "vendorproducts",
-              localField: "vendorId",
-              foreignField: "vendorId",
-              as: "vendorproducts",
-            }
+              from: 'vendorproducts',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorproducts',
+            },
           },
           {
-            $count: "count"
-          }
+            $count: 'count',
+          },
         ]);
         return {
           statusCode: HttpStatus.OK,
-          msg: "vendorproducts of a vendor",
+          msg: 'vendorproducts of a vendor',
           data: vendorproducts,
           count: count,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
@@ -150,31 +183,32 @@ export class VendorproductsService {
   }
 
   async getvendorproductbyid(req: vendorproductDto) {
-    try{
-      const getProduct = await this.vendorproductModel.findOne({vendorProdId: req.vendorProdId});
-      if(getProduct) {
+    try {
+      const getProduct = await this.vendorproductModel.findOne({
+        vendorProdId: req.vendorProdId,
+      });
+      if (getProduct) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Here is the Product Details",
+          msg: 'Here is the Product Details',
           data: getProduct,
-        }
-      } else{
+        };
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
           msg: 'Invalid Request',
-        }
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async editvendProd(req: vendorproductDto, image) {
     try {
-
       console.log(req, 'documents...', image);
       if (image) {
         const reqDoc = image.map((doc, index) => {
@@ -195,74 +229,89 @@ export class VendorproductsService {
 
       if (!imagesCount.productImage || imagesCount.productImage.length === 0) {
         console.log('.........................if');
-      const updateVend = await this.vendorproductModel.updateOne(
-        { $and: [{ vendorId: req.vendorId }, { vendorProdId: req.vendorProdId }] },
-        {
-          $set: {
-            vendorName: req.vendorName,
-            productName: req.productName,
-            productImage: req.productImage,
-            price: req.price,
-            discount: req.discount,
-            finalPrice: req.finalPrice,
-            longitude: req.longitude,
-            latitude: req.latitude,
-            shopType: req.shopType,
-            specifications: req.productDetails,
-            policy: req.policy,
-            description: req.description,
+        const updateVend = await this.vendorproductModel.updateOne(
+          {
+            $and: [
+              { vendorId: req.vendorId },
+              { vendorProdId: req.vendorProdId },
+            ],
           },
-        },
-      );
-      if (updateVend) {
-        return {
-          statusCode: HttpStatus.OK,
-          Message: 'updated Sucessfully',
-          vendupdateRes: updateVend,
-        };
-      }
-    } else {
-      console.log('.........................if');
-      const updateVend = await this.vendorproductModel.updateOne(
-        { $and: [{ vendorId: req.vendorId }, { vendorProdId: req.vendorProdId }] },
-        {
-          $set: {
-            vendorName: req.vendorName,
-            productName: req.productName,
-            // productImage: req.productImage,
-            price: req.price,
-            discount: req.discount,
-            finalPrice: req.finalPrice,
-            longitude: req.longitude,
-            latitude: req.latitude,
-            shopType: req.shopType,
-            specifications: req.productDetails,
-            policy: req.policy,
-            description: req.description,
+          {
+            $set: {
+              vendorName: req.vendorName,
+              productName: req.productName,
+              productImage: req.productImage,
+              price: req.price,
+              discount: req.discount,
+              finalPrice: req.finalPrice,
+              longitude: req.longitude,
+              latitude: req.latitude,
+              shopType: req.shopType,
+              specifications: req.productDetails,
+              policy: req.policy,
+              description: req.description,
+            },
           },
-        },
-      );
-      const imagesQuery = await this.vendorproductModel.updateMany(
-        { $and: [{ vendorId: req.vendorId }, { vendorProdId: req.vendorProdId }] },
-        {
-          $push: { productImage: { $each: req.productImage } },
-        },
-      );
+        );
+        if (updateVend) {
+          return {
+            statusCode: HttpStatus.OK,
+            Message: 'updated Sucessfully',
+            vendupdateRes: updateVend,
+          };
+        }
+      } else {
+        console.log('.........................if');
+        const updateVend = await this.vendorproductModel.updateOne(
+          {
+            $and: [
+              { vendorId: req.vendorId },
+              { vendorProdId: req.vendorProdId },
+            ],
+          },
+          {
+            $set: {
+              vendorName: req.vendorName,
+              productName: req.productName,
+              // productImage: req.productImage,
+              price: req.price,
+              discount: req.discount,
+              finalPrice: req.finalPrice,
+              longitude: req.longitude,
+              latitude: req.latitude,
+              shopType: req.shopType,
+              specifications: req.productDetails,
+              policy: req.policy,
+              description: req.description,
+            },
+          },
+        );
+        const imagesQuery = await this.vendorproductModel.updateMany(
+          {
+            $and: [
+              { vendorId: req.vendorId },
+              { vendorProdId: req.vendorProdId },
+            ],
+          },
+          {
+            $push: { productImage: { $each: req.productImage } },
+          },
+        );
 
-      console.log(imagesQuery, 'imagesQuery');
-      console.log(req.productImage, 'productImage............');
-      if (updateVend) {
-        return {
-          statusCode: HttpStatus.OK,
-          msg: 'Updated Successfully',
-          data: updateVend,
-        };
+        console.log(imagesQuery, 'imagesQuery');
+        console.log(req.productImage, 'productImage............');
+        if (updateVend) {
+          return {
+            statusCode: HttpStatus.OK,
+            msg: 'Updated Successfully',
+            data: updateVend,
+          };
+        }
       }
-    }
-    return {
-      statusCode: HttpStatus.BAD_REQUEST,
-      msg: 'Invalid Request',
-    };
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        msg: 'Invalid Request',
+      };
     } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -407,37 +456,39 @@ export class VendorproductsService {
   }
 
   async stockalert(req: vendorproductDto) {
-    try{
-      const alert = await this.vendorproductModel.findOne({vendorProdId: req.vendorProdId});
-      if(alert) {
-      if(alert.quantity <= 10) {
-        return {
-          statusCode: HttpStatus.OK,
-          msg: "Limited Stock.Please add products",
-          data: {
-            quantity: alert.quantity
-          }
+    try {
+      const alert = await this.vendorproductModel.findOne({
+        vendorProdId: req.vendorProdId,
+      });
+      if (alert) {
+        if (alert.quantity <= 10) {
+          return {
+            statusCode: HttpStatus.OK,
+            msg: 'Limited Stock.Please add products',
+            data: {
+              quantity: alert.quantity,
+            },
+          };
+        } else {
+          return {
+            statusCode: HttpStatus.OK,
+            msg: 'Products Stock is perfectly alright.',
+            data: {
+              quantity: alert.quantity,
+            },
+          };
         }
       } else {
-        return{
-          statusCode: HttpStatus.OK,
-          msg: "Products Stock is perfectly alright.",
-          data: {
-            quantity: alert.quantity
-          }
-        }
+        return {
+          statusCode: HttpStatus.NOT_FOUND,
+          msg: "We didn't find your products",
+        };
       }
-    } else {
-      return {
-        statusCode: HttpStatus.NOT_FOUND,
-        msg: "We didn't find your products",
-      }
-    }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
@@ -471,517 +522,546 @@ export class VendorproductsService {
   }
 
   async searchProductByCategory(req: vendorproductDto) {
-    try{
+    try {
       const searchbycat = await this.vendorproductModel.find({
         $or: [
-          {categoryId: new RegExp('.*' + req.categoryId + '.*', 'i')},
-          {subCategoryId: new RegExp('.*' + req.subCategoryId + '.*', 'i')},
-        ]
+          { categoryId: new RegExp('.*' + req.categoryId + '.*', 'i') },
+          { subCategoryId: new RegExp('.*' + req.subCategoryId + '.*', 'i') },
+        ],
       });
-      if(searchbycat) {
+      if (searchbycat) {
         const catandsubcat = await this.vendorproductModel.aggregate([
-          {$match: {
-            $or: [
-              {categoryId: req.categoryId},
-              {subCategoryId: req.subCategoryId},
-            ]
-          }},
+          {
+            $match: {
+              $or: [
+                { categoryId: req.categoryId },
+                { subCategoryId: req.subCategoryId },
+              ],
+            },
+          },
           {
             $lookup: {
               from: 'categories',
               localField: 'categoryId',
               foreignField: 'categoryId',
-              as: 'categoryId'
-            }
+              as: 'categoryId',
+            },
           },
           {
             $lookup: {
               from: 'subcategories',
               localField: 'subCategoryId',
               foreignField: 'subcategoryId',
-              as: 'subCategoryId'
-            }
-          }
+              as: 'subCategoryId',
+            },
+          },
         ]);
-        if(catandsubcat) {
+        if (catandsubcat) {
           return {
             statusCode: HttpStatus.OK,
             data: catandsubcat,
-          }
+          };
         }
-      } else{
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async getProductByCategory(req: vendorproductDto) {
-    try{
-      const getproductsbycat = await this.categoryModel.findOne({categoryId: req.categoryId});
-      if(getproductsbycat) {
+    try {
+      const getproductsbycat = await this.categoryModel.findOne({
+        categoryId: req.categoryId,
+      });
+      if (getproductsbycat) {
         const getprods = await this.vendorproductModel.aggregate([
-          {$match: {categoryId: getproductsbycat.categoryId}},
+          { $match: { categoryId: getproductsbycat.categoryId } },
           {
-            $lookup:{
+            $lookup: {
               from: 'categories',
               localField: 'categoryId',
               foreignField: 'categoryId',
               as: 'categoryId',
-            }
-          }
+            },
+          },
         ]);
         return {
           statusCode: HttpStatus.OK,
-          msg: "searched category products",
+          msg: 'searched category products',
           data: getprods,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid request"
-        }
+          msg: 'Invalid request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async sendproductRequest(req: productRequestDto) {
-    try{
+    try {
       const requestSend = await this.productRequest.create(req);
-      if(requestSend){
+      if (requestSend) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "ProductRequest send",
+          msg: 'ProductRequest send',
           data: requestSend,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async getproductRequest() {
-    try{
+    try {
       const getList = await this.productRequest.find();
-      if(getList) {
+      if (getList) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "List of productRequests",
+          msg: 'List of productRequests',
           data: getList,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async getProdRequestById(productRequestId: string) {
-    try{
-      const getProduct = await this.productRequest.findOne({productRequestId});
-      if(getProduct) {
+    try {
+      const getProduct = await this.productRequest.findOne({
+        productRequestId,
+      });
+      if (getProduct) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Productrequest Details",
+          msg: 'Productrequest Details',
           data: getProduct,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async editproductRequest(req: productRequestDto) {
-    try{
-      const editproductrequest = await this.productRequest.updateOne({productRequestId: req.productRequestId},{
-        $set: {
-          userId: req.userId,
-          vendorId: req.vendorId,
-          vendorProductId:  req.vendorProductId,
-          quantity: req.quantity,
-          orderTotalAmount: req.orderTotalAmount, 
-          status: req.status
-        }
-      });
-      if(editproductrequest) {
+    try {
+      const editproductrequest = await this.productRequest.updateOne(
+        { productRequestId: req.productRequestId },
+        {
+          $set: {
+            userId: req.userId,
+            vendorId: req.vendorId,
+            vendorProductId: req.vendorProductId,
+            quantity: req.quantity,
+            orderTotalAmount: req.orderTotalAmount,
+            status: req.status,
+          },
+        },
+      );
+      if (editproductrequest) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "updated successfully",
-          data: editproductrequest
-        }
-      } else{
+          msg: 'updated successfully',
+          data: editproductrequest,
+        };
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async productRequestsofUser(req: userDto) {
-    try{
-      const vendor = await this.userModel.findOne({$or:[{vendorId: req.vendorId},{userId: req.userId}]});
-      if(vendor) {
+    try {
+      const vendor = await this.userModel.findOne({
+        $or: [{ vendorId: req.vendorId }, { userId: req.userId }],
+      });
+      if (vendor) {
         const vendorproducts = await this.userModel.aggregate([
-          {$match: {$or: [{vendorId: vendor.vendorId},{userId: vendor.userId}]}},
           {
-            $lookup: {
-              from: "productrequests",
-              localField: "vendorId",
-              foreignField: "vendorId",
-              as: "vendorProductrequests",
-            }
+            $match: {
+              $or: [{ vendorId: vendor.vendorId }, { userId: vendor.userId }],
+            },
           },
           {
-            $lookup:{
-              from: "productrequests",
-              localField: "userId",
-              foreignField: "userId",
-              as: "userProductRequests"
-            }
-          }
+            $lookup: {
+              from: 'productrequests',
+              localField: 'vendorId',
+              foreignField: 'vendorId',
+              as: 'vendorProductrequests',
+            },
+          },
+          {
+            $lookup: {
+              from: 'productrequests',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userProductRequests',
+            },
+          },
         ]);
         return {
           statusCode: HttpStatus.OK,
-          msg: "productrequests of a vendor",
+          msg: 'productrequests of a vendor',
           data: vendorproducts,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         msg: error,
-      }
+      };
     }
   }
 
   async pendingRequestsOfVendor(req: userDto) {
-    try{
+    try {
       const acceptedproductrequests = await this.userModel.findOne({
-        $or: [{vendorId: req.vendorId},{userId: req.userId}]
+        $or: [{ vendorId: req.vendorId }, { userId: req.userId }],
       });
-      if(acceptedproductrequests) {
+      if (acceptedproductrequests) {
         const acceptedrequests = await this.productRequest.aggregate([
-          {$match: 
-            {$and: [
-                {status: 'pending'},
+          {
+            $match: {
+              $and: [
+                { status: 'pending' },
                 {
                   $or: [
-                    {vendorId: acceptedproductrequests.vendorId},
-                    {userId: acceptedproductrequests.userId}
-                  ]
-                }
-              ]}
+                    { vendorId: acceptedproductrequests.vendorId },
+                    { userId: acceptedproductrequests.userId },
+                  ],
+                },
+              ],
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'vendorId',
               foreignField: 'vendorId',
-              as: 'vendorId'
-            }
+              as: 'vendorId',
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'userId',
               foreignField: 'userId',
-              as: 'userId'
-            }
-          }
+              as: 'userId',
+            },
+          },
         ]);
         const count = await this.productRequest.aggregate([
-          {$match: 
-            {$and: [
-                {status: 'pending'},
+          {
+            $match: {
+              $and: [
+                { status: 'pending' },
                 {
                   $or: [
-                    {vendorId: acceptedproductrequests.vendorId},
-                    {userId: acceptedproductrequests.userId}
-                  ]
-                }
-              ]}
+                    { vendorId: acceptedproductrequests.vendorId },
+                    { userId: acceptedproductrequests.userId },
+                  ],
+                },
+              ],
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'vendorId',
               foreignField: 'vendorId',
-              as: 'vendorId'
-            }
+              as: 'vendorId',
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'userId',
               foreignField: 'userId',
-              as: 'userId'
-            }
+              as: 'userId',
+            },
           },
           {
-            $count: 'count'
-          }
+            $count: 'count',
+          },
         ]);
         return {
           statusCode: HttpStatus.OK,
           msg: 'Received Requests of a user',
           data: acceptedrequests,
           count: count,
-        }
-      } else{
+        };
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Requests",
-        }
+          msg: 'Invalid Requests',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async acceptedRequestsOfVendor(req: userDto) {
-    try{
+    try {
       const acceptedproductrequests = await this.userModel.findOne({
-        $or: [{vendorId: req.vendorId},{userId: req.userId}]
+        $or: [{ vendorId: req.vendorId }, { userId: req.userId }],
       });
-      if(acceptedproductrequests) {
+      if (acceptedproductrequests) {
         const acceptedrequests = await this.productRequest.aggregate([
-          {$match: 
-            {$and: [
-                {status: 'received'},
+          {
+            $match: {
+              $and: [
+                { status: 'received' },
                 {
                   $or: [
-                    {vendorId: acceptedproductrequests.vendorId},
-                    {userId: acceptedproductrequests.userId}
-                  ]
-                }
-              ]}
+                    { vendorId: acceptedproductrequests.vendorId },
+                    { userId: acceptedproductrequests.userId },
+                  ],
+                },
+              ],
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'vendorId',
               foreignField: 'vendorId',
-              as: 'vendorId'
-            }
+              as: 'vendorId',
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'userId',
               foreignField: 'userId',
-              as: 'userId'
-            }
-          }
+              as: 'userId',
+            },
+          },
         ]);
         const count = await this.productRequest.aggregate([
-          {$match: 
-            {$and: [
-                {status: 'received'},
+          {
+            $match: {
+              $and: [
+                { status: 'received' },
                 {
                   $or: [
-                    {vendorId: acceptedproductrequests.vendorId},
-                    {userId: acceptedproductrequests.userId}
-                  ]
-                }
-              ]}
+                    { vendorId: acceptedproductrequests.vendorId },
+                    { userId: acceptedproductrequests.userId },
+                  ],
+                },
+              ],
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'vendorId',
               foreignField: 'vendorId',
-              as: 'vendorId'
-            }
+              as: 'vendorId',
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'userId',
               foreignField: 'userId',
-              as: 'userId'
-            }
+              as: 'userId',
+            },
           },
           {
-            $count: 'count'
-          }
+            $count: 'count',
+          },
         ]);
         return {
           statusCode: HttpStatus.OK,
           msg: 'Received Requests of a user',
           data: acceptedrequests,
           count: count,
-        }
-      } else{
+        };
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Requests",
-        }
+          msg: 'Invalid Requests',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   // completed count api
   async completedRequestsOfVendor(req: userDto) {
-    try{
+    try {
       const completedproductrequests = await this.userModel.findOne({
-        $or: [{vendorId: req.vendorId},{userId: req.userId}]
+        $or: [{ vendorId: req.vendorId }, { userId: req.userId }],
       });
-      if(completedproductrequests) {
+      if (completedproductrequests) {
         const acceptedrequests = await this.productRequest.aggregate([
-          {$match: 
-            {$and: [
-                {status: 'completed'},
+          {
+            $match: {
+              $and: [
+                { status: 'completed' },
                 {
                   $or: [
-                    {vendorId: completedproductrequests.vendorId},
-                    {userId: completedproductrequests.userId}
-                  ]
-                }
-              ]}
+                    { vendorId: completedproductrequests.vendorId },
+                    { userId: completedproductrequests.userId },
+                  ],
+                },
+              ],
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'vendorId',
               foreignField: 'vendorId',
-              as: 'vendorId'
-            }
+              as: 'vendorId',
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'userId',
               foreignField: 'userId',
-              as: 'userId'
-            }
-          }
+              as: 'userId',
+            },
+          },
         ]);
         const count = await this.productRequest.aggregate([
-          {$match: 
-            {$and: [
-                {status: 'completed'},
+          {
+            $match: {
+              $and: [
+                { status: 'completed' },
                 {
                   $or: [
-                    {vendorId: completedproductrequests.vendorId},
-                    {userId: completedproductrequests.userId}
-                  ]
-                }
-              ]}
+                    { vendorId: completedproductrequests.vendorId },
+                    { userId: completedproductrequests.userId },
+                  ],
+                },
+              ],
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'vendorId',
               foreignField: 'vendorId',
-              as: 'vendorId'
-            }
+              as: 'vendorId',
+            },
           },
           {
             $lookup: {
               from: 'users',
               localField: 'userId',
               foreignField: 'userId',
-              as: 'userId'
-            }
+              as: 'userId',
+            },
           },
           {
-            $count: 'count'
-          }
+            $count: 'count',
+          },
         ]);
         return {
           statusCode: HttpStatus.OK,
           msg: 'Completed Requests of a user',
           data: acceptedrequests,
           count: count,
-        }
-      } else{
+        };
+      } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Requests",
-        }
+          msg: 'Invalid Requests',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 
   async deleteRequest(req: productRequestDto) {
-    try{
-      const eliminateRequest = await this.productRequest.deleteOne({productRequestId: req.productRequestId});
-      if(eliminateRequest) {
+    try {
+      const eliminateRequest = await this.productRequest.deleteOne({
+        productRequestId: req.productRequestId,
+      });
+      if (eliminateRequest) {
         return {
           statusCode: HttpStatus.OK,
-          msg: "Deleted Successfully",
+          msg: 'Deleted Successfully',
           data: eliminateRequest,
-        }
+        };
       } else {
         return {
           statusCode: HttpStatus.BAD_REQUEST,
-          msg: "Invalid Request",
-        }
+          msg: 'Invalid Request',
+        };
       }
-    } catch(error) {
+    } catch (error) {
       return {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-        msg: error
-      }
+        msg: error,
+      };
     }
   }
 }

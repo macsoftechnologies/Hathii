@@ -18,11 +18,11 @@ export class vendorproduct extends Document{
     @Prop()
     productImage: []
     @Prop()
-    price:string
+    price:number
     @Prop()
-    discount:string 
+    discount:number 
     @Prop()
-    finalPrice:string 
+    finalPrice:number 
     @Prop()
     longitude: []
     @Prop()
