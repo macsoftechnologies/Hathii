@@ -180,6 +180,7 @@ export class AdminService {
   async getadminProd() {
     try {
       const getProd = await this.adminProductModel.find();
+      const count = await this.adminProductModel.find().count();
       if (getProd) {
         const getvendors = await this.adminProductModel.aggregate([
           {
@@ -195,6 +196,7 @@ export class AdminService {
           statusCode: HttpStatus.OK,
           Message: 'list of products',
           data: getvendors,
+          count: count,
         };
       }
     } catch (error) {
@@ -444,6 +446,7 @@ export class AdminService {
   async getfeedback() {
     try {
       const getfeed = await this.feedbackModel.find();
+      const count = await this.feedbackModel.find().count();
       if (getfeed) {
         const getFeedBack = await this.feedbackModel.aggregate([
           {
@@ -466,6 +469,7 @@ export class AdminService {
         return {
           statusCode: HttpStatus.OK,
           res: getFeedBack,
+          count: count,
         };
       }
     } catch (error) {
@@ -534,6 +538,7 @@ export class AdminService {
   async getcomplainte() {
     try {
       const rescomplaint = await this.complaintModel.find();
+      const count = await this.complaintModel.find().count();
       if (rescomplaint) {
         const getFeedBack = await this.complaintModel.aggregate([
           {
@@ -556,6 +561,7 @@ export class AdminService {
         return {
           statusCode: HttpStatus.OK,
           complaintres: getFeedBack,
+          count: count,
         };
       }
     } catch (error) {
@@ -635,6 +641,7 @@ export class AdminService {
   async getRewardPoints() {
     try {
       const respoints = await this.rewardpointModel.find();
+      const count = await this.rewardpointModel.find().count();
       if (respoints) {
         const getFeedBack = await this.rewardpointModel.aggregate([
           {
@@ -649,6 +656,7 @@ export class AdminService {
         return {
           statusCode: HttpStatus.OK,
           points: getFeedBack,
+          count: count,
         };
       }
     } catch (error) {
@@ -758,11 +766,13 @@ export class AdminService {
   async getCouponsList() {
     try {
       const getAll = await this.couponModel.find();
+      const count = await this.couponModel.find().count();
       if (getAll) {
         return {
           statusCode: HttpStatus.OK,
           msg: 'Coupons List',
           data: getAll,
+          count:count,
         };
       } else {
         return {

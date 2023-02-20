@@ -97,6 +97,7 @@ export class RatingService {
   async getVendorRatings(req: ratingDto) {
     try{
       const getvendorratings = await this.ratingModel.find({role: req.role});
+      const count = await this.ratingModel.find({role: req.role}).count();
       if(getvendorratings) {
         const getvendors = await this.ratingModel.aggregate([
           {$match: {userId: getvendorratings[0].userId}},
@@ -131,6 +132,7 @@ export class RatingService {
           statusCode: HttpStatus.OK,
           msg: "Ratings of the requested role",
           data: getvendors,
+          count: count,
         }
       }
     }  catch(error) {
@@ -307,12 +309,14 @@ export class RatingService {
   async getReviewlist() {
     try {
       const add = await this.reviewModel.find();
+      const count = await this.reviewModel.find().count();
       // console.log(add)
       if (add) {
         return {
           statusCode: HttpStatus.OK,
           msg: 'List of reviews',
           data: add,
+          count: count,
         };
       }
       return {

@@ -92,11 +92,13 @@ export class VendorproductsService {
   async getVenProd() {
     try {
       const vendRes = await this.vendorproductModel.find();
+      const count = await this.vendorproductModel.find().count();
       if (vendRes) {
         return {
           statusCode: HttpStatus.OK,
           Message: 'list of vendorPorducts',
           data: vendRes,
+          count: count,
         };
       }
     } catch (error) {
@@ -650,11 +652,13 @@ export class VendorproductsService {
   async getproductRequest() {
     try {
       const getList = await this.productRequest.find();
+      const count = await this.productRequest.find().count();
       if (getList) {
         return {
           statusCode: HttpStatus.OK,
           msg: 'List of productRequests',
           data: getList,
+          count: count,
         };
       } else {
         return {

@@ -487,11 +487,13 @@ export class UserService {
   async getAll(req: userDto) {
     try {
       const getResp = await this.UserModel.find({ role: req.role });
+      const count = await this.UserModel.find({ role: req.role }).count();
       if (getResp) {
         return {
           statusCode: HttpStatus.OK,
           message: 'list of users',
           data: getResp,
+          count: count,
         };
       }
       return {
