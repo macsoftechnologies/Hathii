@@ -441,6 +441,23 @@ async login(@Body() req: adminDto){
    }
 
    @ApiTags('admin')
+   @ApiBody({
+    type: rewardpointDto
+   })
+   @Post('/getrewardpointsbyrole')
+   async getrewardpointsByRole(@Body() req: rewardpointDto) {
+    try{
+      const rewards = await this.adminService.getRewardPointsByRole(req);
+      return rewards
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error,
+      }
+    }
+   }
+
+   @ApiTags('admin')
    @Get('/getRewardPoint')
    async points(){
     try{

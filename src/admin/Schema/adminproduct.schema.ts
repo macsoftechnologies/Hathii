@@ -26,10 +26,12 @@ export class adminproduct extends Document{
         type:any 
     }
     @Prop()
-    price: string
+    price: number
     @Prop()
-    quantity: string
+    quantity: number
     @Prop()
-    discount: string
+    discount: number
+    @Prop()
+    finalPrice: number
 }
 export const adminproductSchema=SchemaFactory.createForClass(adminproduct)

@@ -158,11 +158,28 @@ export class AdminService {
       const adminProd = await this.adminProductModel.create(req);
 
       if (adminProd) {
+        adminProd.finalPrice = (adminProd.price - (adminProd.price * (adminProd.discount/100)));
+        const updating = await this.adminProductModel.updateOne(
+          { productId: adminProd.productId },
+          {
+            $set: {
+              vendorId: adminProd.vendorId,
+              categoryId: adminProd.categoryId,
+              productName: adminProd.productName,
+              productDescription: adminProd.productDescription,
+              productImage: adminProd.productImage,
+              adminProductId: adminProd.adminProductId,
+              specifications: adminProd.specifications,
+              price: adminProd.price,
+              discount: adminProd.discount,
+              finalPrice: (adminProd.price - (adminProd.price * (adminProd.discount/100))),
+              quantity: adminProd.quantity,
+            },
+          },
+        );
         return {
           statusCode: HttpStatus.OK,
           AdminProduct: adminProd,
-
-          //        }
         };
       }
       return {
@@ -258,6 +275,7 @@ export class AdminService {
             price: req.price,
             quantity: req.quantity,
             discount: req.discount,
+            finalPrice: (req.price - (req.price * (req.discount/100)))
           },
         },
       );
@@ -635,6 +653,41 @@ export class AdminService {
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         Message: error,
       };
+    }
+  }
+
+  async getRewardPointsByRole(req: rewardpointDto) {
+    try{
+      const getuserpoints = await this.rewardpointModel.find({role: req.role});
+      const count = await this.rewardpointModel.find({role: req.role}).count();
+      if(getuserpoints) {
+        const getusers = await this.rewardpointModel.aggregate([
+          {$match: {role: req.role}},
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'userId',
+              foreignField: 'userId',
+              as: 'userId'
+            }
+          }
+        ]);
+        return {
+          statusCode: HttpStatus.OK,
+          msg: "Reward Points of the user",
+          count: count,
+          data: getusers,
+        }
+      }
+      return {
+        statusCode: HttpStatus.BAD_REQUEST,
+        msg: "Invalid request",
+      }
+    } catch(error) {
+      return {
+        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+        msg: error
+      }
     }
   }
 

@@ -18,9 +18,11 @@ export class adminproductDto{
     @ApiProperty()
     specifications: {}
     @ApiProperty()
-    price: string
+    price: number
     @ApiProperty()
-    quantity: string
+    quantity: number
     @ApiProperty()
-    discount: string
+    discount: number
+    @ApiProperty()
+    finalPrice: number
 }
