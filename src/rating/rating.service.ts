@@ -21,9 +21,7 @@ export class RatingService {
     try {
       const rate = await this.ratingModel.create(req);
       if (rate) {
-        rate.averageRating =
-          (req.vendorVerficationRating + req.overallRating + req.responseRate) /
-          3;
+        rate.averageRating = (req.vendorVerficationRating + req.overallRating + req.responseRate) /3;
         const updating = await this.ratingModel.updateOne(
           { ratingId: rate.ratingId },
           {
@@ -233,7 +231,7 @@ export class RatingService {
   async deleteRate(req) {
     try {
       const delrate = await this.ratingModel.deleteOne({
-        buyerId: req.buyerId,
+        ratingId: req.ratingId,
       });
       if (delrate) {
         return {
